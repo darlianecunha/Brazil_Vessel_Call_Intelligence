@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brazil Vessel Call Intelligence</title>
+  <meta name="description" content="An IMO-based data platform for port activity, fleet capacity and decarbonisation analytics across Brazilian ports.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a class="brand" href="index.html">
+        <span class="mark">BV</span>
+        <span>Brazil Vessel Call Intelligence<small data-i18n="brand.sub">IMO-based port &amp; fleet analytics</small></span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.overview">Overview</a>
+        <a href="vessel-explorer.html" data-i18n="nav.vessels">Vessel Explorer</a>
+        <a href="port-call-analytics.html" data-i18n="nav.portcalls">Port Call Analytics</a>
+        <a href="emissions.html" data-i18n="nav.emissions">Emissions &amp; OPS</a>
+        <a href="data-quality.html" data-i18n="nav.dataquality">Data Quality</a>
+      </div>
+      <button class="lang-toggle" id="langToggle" title="English / Português">PT</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero.eyebrow">IMO-based data platform</p>
+      <h1 data-i18n="hero.title">Port activity, fleet capacity and decarbonisation analytics for Brazilian ports</h1>
+      <p data-i18n="hero.desc">An integrated intelligence layer across Brazil's port system.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="vessel-explorer.html" data-i18n="hero.cta1">Explore vessels</a>
+        <a class="btn btn-ghost" href="emissions.html" data-i18n="hero.cta2">Emissions &amp; OPS potential</a>
+      </div>
+      <div class="status-strip">
+        <span><span data-i18n="status.updated">Last updated:</span> <b data-last-updated>—</b></span>
+        <span><span data-i18n="status.status">Status:</span> <b data-data-status>Loading…</b></span>
+        <span><span data-i18n="status.coverage">DWT coverage:</span> <b data-kpi="overview.dwt_coverage_pct" data-fmt="pct">—</b></span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="ov.eyebrow">Executive overview</p>
+      <h2 class="section-title" style="margin-top:6px" data-i18n="ov.keyfigures">Key figures</h2>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.vessels">Unique vessels</div>
+          <div class="value" data-kpi="overview.unique_vessels" data-fmt="int">Pending</div>
+          <div class="sub" data-i18n="kpi.vessels.sub">Distinct IMO numbers</div>
+        </div>
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.calls">Total port calls</div>
+          <div class="value" data-kpi="overview.total_port_calls" data-fmt="int">Pending</div>
+          <div class="sub" data-i18n="kpi.calls.sub">Berthing events</div>
+        </div>
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.dwt">Total DWT</div>
+          <div class="value" data-kpi="overview.total_dwt" data-fmt="dwt">Pending</div>
+          <div class="sub" data-i18n="kpi.dwt.sub">Potential capacity handled</div>
+        </div>
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.ports">Ports covered</div>
+          <div class="value" data-kpi="overview.ports_covered" data-fmt="int">Pending</div>
+          <div class="sub" data-i18n="kpi.ports.sub">Brazilian ports</div>
+        </div>
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.cargo">Cargo types</div>
+          <div class="value" data-kpi="overview.cargo_types" data-fmt="int">Pending</div>
+          <div class="sub" data-i18n="kpi.cargo.sub">Liquid, dry bulk, container…</div>
+        </div>
+        <div class="kpi">
+          <div class="label" data-i18n="kpi.cov">DWT coverage</div>
+          <div class="value" data-kpi="overview.dwt_coverage_pct" data-fmt="pct">Pending</div>
+          <div class="sub" data-i18n="kpi.cov.sub">Vessels with DWT found</div>
+        </div>
+      </div>
+
+      <h2 class="section-title" data-i18n="sec.fleet">Fleet profile &amp; capacity</h2>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h3 data-i18n="ch.capbyport">Capacity handled by port</h3>
+          <p class="hint" data-i18n="ch.capbyport.h">Sum of unique-vessel DWT calling at each port</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-dwt-by-port"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h3 data-i18n="ch.fleetsize">Fleet size by port</h3>
+          <p class="hint" data-i18n="ch.fleetsize.h">Distinct vessels (IMO) per port</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-vessels-by-port"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h3 data-i18n="ch.sizeclass">Fleet by DWT size class</h3>
+          <p class="hint" data-i18n="ch.sizeclass.h">Distinct vessels grouped by deadweight</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-size-class"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h3 data-i18n="ch.cargomix">Cargo mix</h3>
+          <p class="hint" data-i18n="ch.cargomix.h">Port calls by cargo nature</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-cargo-mix"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-box tall" style="margin-bottom:22px">
+        <h3 data-i18n="ch.sizebyport">Fleet by DWT size class, per port</h3>
+        <p class="hint" data-i18n="ch.sizebyport.h">Distinct vessels by deadweight class, stacked by port</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-size-class-by-port"></canvas></div>
+      </div>
+
+      <h2 class="section-title" data-i18n="eu.title">Europe benchmark (EU MRV)</h2>
+      <p style="margin:-6px 0 16px;color:var(--muted);font-size:14px" data-i18n="eu.desc">Vessels calling at the Brazilian ports that also report verified CO₂ under the EU MRV scheme, compared against the full European fleet.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><div class="n" id="eu-overlap">–</div><div class="l" data-i18n="eu.st.overlap">Vessels in both datasets</div></div>
+        <div class="stat-chip"><div class="n" id="eu-pct">–</div><div class="l" data-i18n="eu.st.pct">Brazil fleet also in EU MRV</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-br">–</div><div class="l" data-i18n="eu.st.brnm">Median CO₂/nm, Brazil-operating</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-eu">–</div><div class="l" data-i18n="eu.st.eunm">Median CO₂/nm, EU fleet</div></div>
+      </div>
+      <div class="chart-box tall" style="margin-bottom:22px">
+        <h3 data-i18n="eu.chart">CO₂ per transport work by ship type (g CO₂ / t·nm)</h3>
+        <p class="hint" data-i18n="eu.chart.h">Lower is more efficient. Median of each fleet.</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-europe-type"></canvas></div>
+      </div>
+
+      <h2 class="section-title" data-i18n="sec.modules">Platform modules</h2>
+      <div class="card-grid">
+        <a class="feature" href="index.html">
+          <div class="num">1</div>
+          <h3 data-i18n="m1.t">Brazil Vessel Overview</h3>
+          <p data-i18n="m1.d">Executive dashboard: total vessels, port calls, DWT, ports and cargo mix at a glance.</p>
+          <span class="go" data-i18n="m1.go">You are here →</span>
+        </a>
+        <a class="feature" href="vessel-explorer.html">
+          <div class="num">2</div>
+          <h3 data-i18n="m2.t">Vessel Explorer</h3>
+          <p data-i18n="m2.d">Search by IMO, name, DWT, type and call history. A filterable data product over the fleet.</p>
+          <span class="go" data-i18n="m.open">Open module →</span>
+        </a>
+        <a class="feature" href="port-call-analytics.html">
+          <div class="num">3</div>
+          <h3 data-i18n="m3.t">Port Call Analytics</h3>
+          <p data-i18n="m3.d">Rankings of ports, terminals, months, cargo and call frequency. Maritime activity analysis.</p>
+          <span class="go" data-i18n="m.open">Open module →</span>
+        </a>
+        <a class="feature" href="emissions.html">
+          <div class="num">4</div>
+          <h3 data-i18n="m4.t">Emissions &amp; OPS Potential</h3>
+          <p data-i18n="m4.d">Estimated at-berth CO₂, avoidable emissions and shore-power (OPS) prioritisation by port.</p>
+          <span class="go" data-i18n="m.open">Open module →</span>
+        </a>
+        <a class="feature" href="data-quality.html">
+          <div class="num">5</div>
+          <h3 data-i18n="m5.t">Data Quality Monitor</h3>
+          <p data-i18n="m5.d">DWT coverage, source provenance, gaps and inconsistencies. Data-engineering maturity in view.</p>
+          <span class="go" data-i18n="m.open">Open module →</span>
+        </a>
+      </div>
+
+      <h2 class="section-title" data-i18n="sec.about">About this platform</h2>
+      <div class="panel">
+        <p style="margin-top:0" data-i18n="about.p">This platform integrates official Brazilian port-call data with an IMO-based vessel master.</p>
+        <div class="two-col">
+          <div>
+            <p data-i18n="about.a">A. Fleet profile</p>
+            <p data-i18n="about.b">B. Operational</p>
+          </div>
+          <div>
+            <p data-i18n="about.c">C. Environmental</p>
+            <p data-i18n="about.d">D. Data quality</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Brazil Vessel Call Intelligence — research &amp; portfolio project by <strong>Darliane Ribeiro Cunha, PhD</strong></span>
+      <span data-i18n="footer.data">Data: ANTAQ · DNV · VesselFinder · Prototype, figures indicative</span>
+    </div>
+  </footer>
+
+  <script src="data/summary.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="data/dashboard.js"></script>
+  <script src="data/europe_benchmark.js"></script>
+  <script src="assets/js/charts.js"></script>
+</body>
+</html>
