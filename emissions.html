@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emissions &amp; OPS Potential — Brazil Vessel Call Intelligence</title>
+  <style>
+:root {
+  --navy: #0b2239;
+  --navy-2: #12304d;
+  --teal: #0fb5ba;
+  --teal-dark: #0a8f93;
+  --ink: #1c2b36;
+  --muted: #5b6b78;
+  --line: #e2e8ee;
+  --bg: #f5f8fa;
+  --card: #ffffff;
+  --warn: #e8a33d;
+  --good: #2fa36b;
+  --bad: #d6584f;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(11,34,57,.08), 0 8px 24px rgba(11,34,57,.06);
+  --font: "Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--teal-dark); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Header / nav ---------- */
+.site-header {
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+.nav-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 24px;
+  min-height: 62px;
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: #fff;
+}
+.brand:hover { text-decoration: none; }
+.brand .mark {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--teal);
+  display: grid; place-items: center;
+  color: var(--navy);
+  font-weight: 800;
+}
+.brand small { display: block; font-weight: 400; font-size: 11px; color: #9fb6c9; letter-spacing: .3px; }
+.nav-links { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: #cfe0ee;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.nav-links a:hover { background: rgba(255,255,255,.08); color: #fff; text-decoration: none; }
+.nav-links a.active { background: var(--teal); color: var(--navy); font-weight: 600; }
+.lang-toggle {
+  margin-left: 12px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: transparent;
+  color: #cfe0ee;
+  font: 600 13px/1 var(--font);
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: .5px;
+}
+.lang-toggle:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+/* ---------- Layout ---------- */
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+main { padding: 34px 0 60px; }
+
+.page-head { margin: 0 0 22px; }
+.page-head h1 { font-size: 26px; margin: 0 0 6px; color: var(--navy); }
+.page-head p { margin: 0; color: var(--muted); max-width: 780px; }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  margin: 0 0 8px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background: linear-gradient(120deg, var(--navy) 0%, #0e2b47 55%, var(--teal-dark) 160%);
+  color: #fff;
+  padding: 54px 0 48px;
+}
+.hero h1 { font-size: 34px; line-height: 1.2; margin: 10px 0 14px; max-width: 820px; }
+.hero p { color: #cfe0ee; max-width: 720px; font-size: 16px; margin: 0 0 22px; }
+.hero .eyebrow { color: var(--teal); }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-block;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn-primary { background: var(--teal); color: var(--navy); }
+.btn-primary:hover { background: #16c7cc; text-decoration: none; }
+.btn-ghost { border-color: rgba(255,255,255,.35); color: #fff; }
+.btn-ghost:hover { background: rgba(255,255,255,.1); text-decoration: none; }
+
+.status-strip {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  margin-top: 26px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.15);
+  font-size: 13px; color: #a9c1d4;
+}
+.status-strip b { color: #fff; font-weight: 600; }
+
+/* ---------- KPI cards ---------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 8px 0 30px;
+}
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 18px 16px;
+  box-shadow: var(--shadow);
+}
+.kpi .label { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); font-weight: 600; }
+.kpi .value { font-size: 30px; font-weight: 700; color: var(--navy); margin: 6px 0 2px; }
+.kpi .value.pending { color: var(--muted); font-weight: 500; }
+.kpi .sub { font-size: 12px; color: var(--muted); }
+
+/* ---------- Section cards ---------- */
+.section-title { font-size: 19px; color: var(--navy); margin: 34px 0 14px; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+}
+.feature {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+}
+.feature .num {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: #e6f7f7; color: var(--teal-dark);
+  display: grid; place-items: center; font-weight: 700; margin-bottom: 12px;
+}
+.feature h3 { margin: 0 0 8px; font-size: 16px; color: var(--navy); }
+.feature p { margin: 0 0 14px; font-size: 14px; color: var(--muted); flex: 1; }
+.feature .go { font-size: 13px; font-weight: 600; color: var(--teal-dark); }
+
+/* ---------- Charts ---------- */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.chart-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.chart-box h3 { margin: 0 0 2px; font-size: 15px; color: var(--navy); }
+.chart-box .hint { margin: 0 0 14px; font-size: 12px; color: var(--muted); }
+.chart-canvas-wrap { position: relative; height: 280px; }
+.chart-box.tall .chart-canvas-wrap { height: 420px; }
+
+.stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.stat-chip {
+  flex: 1; min-width: 160px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.stat-chip .n { font-size: 24px; font-weight: 700; color: var(--navy); }
+.stat-chip .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+/* ---------- Content card / tables ---------- */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+.panel h2 { margin: 0 0 4px; font-size: 17px; color: var(--navy); }
+.panel .hint { margin: 0 0 16px; font-size: 13px; color: var(--muted); }
+
+table.data { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.data th, table.data td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+table.data th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+table.data tr:last-child td { border-bottom: none; }
+table.data td.metric { font-weight: 600; color: var(--navy); }
+
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pill.pending { background: #eef2f5; color: var(--muted); }
+.pill.good { background: #e4f4ec; color: var(--good); }
+.pill.warn { background: #fbefdb; color: #b9781f; }
+.pill.bad  { background: #fbe6e4; color: var(--bad); }
+
+.placeholder-box {
+  border: 1px dashed #c3d0da;
+  border-radius: var(--radius);
+  background: #fbfdfe;
+  padding: 26px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.placeholder-box .big { font-size: 30px; margin-bottom: 8px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+@media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 26px 0;
+}
+.site-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.site-footer strong { color: var(--navy); }
+
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a class="brand" href="index.html">
+        <span class="mark">BV</span>
+        <span>Brazil Vessel Call Intelligence<small data-i18n="brand.sub">IMO-based port &amp; fleet analytics</small></span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav.overview">Overview</a>
+        <a href="vessel-explorer.html" data-i18n="nav.vessels">Vessel Explorer</a>
+        <a href="port-call-analytics.html" data-i18n="nav.portcalls">Port Call Analytics</a>
+        <a href="emissions.html" data-i18n="nav.emissions">Emissions &amp; OPS</a>
+        <a href="data-quality.html" data-i18n="nav.dataquality">Data Quality</a>
+      </div>
+      <button class="lang-toggle" id="langToggle" title="English / Português">PT</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="page-head">
+        <p class="eyebrow" data-i18n="em.eyebrow">Module 4 · Climate analytics</p>
+        <h1 data-i18n="em.title">Emissions &amp; OPS Potential</h1>
+        <p data-i18n="em.desc">Emissions &amp; OPS Potential description.</p>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="label" data-t>Estimated CO₂</div><div class="value" data-kpi="emissions.total_co2_estimated_t" data-fmt="int" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes at berth</div></div>
+        <div class="kpi"><div class="label" data-t>CO₂ / dwell hour</div><div class="value" data-kpi="emissions.avg_co2_per_dwell_hour" style="font-size:22px">Pending</div><div class="sub" data-t>Operational intensity</div></div>
+        <div class="kpi"><div class="label" data-t>Top-emitting port</div><div class="value" data-kpi="emissions.top_emitting_port" style="font-size:20px">Pending</div><div class="sub" data-t>Climate priority</div></div>
+        <div class="kpi"><div class="label" data-t>OPS-avoidable CO₂</div><div class="value" data-kpi="emissions.ops_avoidable_t" data-fmt="int" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes, shore power</div></div>
+      </div>
+
+      <div class="panel">
+        <h2 data-t>Environmental indicators</h2>
+        <p class="hint" data-t>Family C — carbon accounting per vessel call.</p>
+        <table class="data">
+          <thead><tr><th data-t>Indicator</th><th data-t>How it is calculated</th><th data-t>Use</th></tr></thead>
+          <tbody>
+            <tr><td class="metric" data-t>CO₂ per vessel</td><td data-t>Aux. power × berthing hours × emission factor</td><td data-t>Carbon accounting</td></tr>
+            <tr><td class="metric" data-t>CO₂ per berthing hour</td><td data-t>CO₂ ÷ berthing hours</td><td data-t>Operational intensity</td></tr>
+            <tr><td class="metric" data-t>CO₂ per DWT</td><td data-t>CO₂ ÷ vessel capacity</td><td data-t>Efficiency indicator</td></tr>
+            <tr><td class="metric" data-t>Highest-emission ports</td><td data-t>Sum of CO₂ by port</td><td data-t>Climate prioritisation</td></tr>
+            <tr><td class="metric" data-t>OPS potential</td><td data-t>Avoidable emissions during berthing</td><td data-t>Electrification planning</td></tr>
+            <tr><td class="metric" data-t>Top emitting vessels</td><td data-t>Rank by estimated CO₂</td><td data-t>Environmental management</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title" data-i18n="eu.title">Europe benchmark (EU MRV)</h2>
+      <p class="page-head" style="margin:-6px 0 16px;color:var(--muted);font-size:14px" data-i18n="eu.desc">Vessels calling at the Brazilian ports that also report verified CO₂ under the EU MRV scheme, compared against the full European fleet.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><div class="n" id="eu-overlap">–</div><div class="l" data-i18n="eu.st.overlap">Vessels in both datasets</div></div>
+        <div class="stat-chip"><div class="n" id="eu-pct">–</div><div class="l" data-i18n="eu.st.pct">Brazil fleet also in EU MRV</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-br">–</div><div class="l" data-i18n="eu.st.brnm">Median CO₂/nm, Brazil-operating</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-eu">–</div><div class="l" data-i18n="eu.st.eunm">Median CO₂/nm, EU fleet</div></div>
+      </div>
+      <div class="chart-box tall" style="margin-bottom:22px">
+        <h3 data-i18n="eu.chart">CO₂ per transport work by ship type (g CO₂ / t·nm)</h3>
+        <p class="hint" data-i18n="eu.chart.h">Lower is more efficient. Median of each fleet.</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-europe-type"></canvas></div>
+      </div>
+
+      <div class="panel">
+        <h2 data-t>Methodology note</h2>
+        <p class="hint" style="margin-bottom:0" data-t>At-berth CO₂ is estimated as auxiliary_power_kW × berthing_hours × emission_factor. OPS-avoidable emissions assume grid-supplied shore power replaces auxiliary engines during berthing. Emission factors and auxiliary loads are documented per fuel type in the emissions dataset.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Brazil Vessel Call Intelligence, <span data-i18n="footer.left">research &amp; portfolio project by</span> <strong>Darliane Ribeiro Cunha, PhD</strong></span>
+      <span data-i18n="footer.proto">Prototype · figures indicative</span>
+    </div>
+  </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* dados */
+// Gerado automaticamente a partir de summary.json. Permite carregar sem servidor.
+window.SUMMARY = {
+  "meta": {
+    "last_updated": "2026-07-01",
+    "data_status": "Provisorio: Itaguai, Itaqui e Paranagua (bases locais). ANTAQ em manutencao.",
+    "coverage_note": "3 de 20 portos; os demais entram quando a ANTAQ voltar."
+  },
+  "overview": {
+    "unique_vessels": 8506,
+    "total_port_calls": 30972,
+    "total_dwt": 548233168.26,
+    "ports_covered": 3,
+    "cargo_types": 3,
+    "dwt_coverage_pct": 94.82
+  },
+  "fleet_profile": {
+    "avg_dwt": 68111.96,
+    "largest_vessel_name": "MAAS CONFIDENCE",
+    "largest_vessel_dwt": 349140,
+    "top10pct_call_share_pct": null
+  },
+  "operational": {
+    "busiest_port": "Paranaguá",
+    "avg_dwell_hours": 79.89,
+    "peak_month": null
+  },
+  "emissions": {
+    "total_co2_estimated_t": 3143178.98,
+    "avg_co2_per_dwell_hour": 3.19,
+    "top_emitting_port": "Paranaguá",
+    "ops_avoidable_t": null
+  },
+  "data_quality": {
+    "dwt_found_pct": 94.82,
+    "dwt_missing_pct": 5.18,
+    "records_manual_review": 5,
+    "sources": [
+      "Base local Itaguai",
+      "Base local Itaqui",
+      "Base local Paranagua"
+    ]
+  }
+};
+
+// Gerado por 02_dashboard.py
+window.DASHBOARD = {
+  "by_port": [
+    {
+      "port": "Paranaguá",
+      "calls": 18412,
+      "unique_vessels": 6094,
+      "avg_dwt": 57407.0,
+      "total_dwt_capacity": 349552301.0,
+      "total_co2": 2093168.0
+    },
+    {
+      "port": "Itaguaí",
+      "calls": 6696,
+      "unique_vessels": 1943,
+      "avg_dwt": 116752.0,
+      "total_dwt_capacity": 174194238.0,
+      "total_co2": 170893.0
+    },
+    {
+      "port": "Itaqui",
+      "calls": 5864,
+      "unique_vessels": 2920,
+      "avg_dwt": 57700.0,
+      "total_dwt_capacity": 168427584.0,
+      "total_co2": 879118.0
+    }
+  ],
+  "size_class": [
+    {
+      "label": "Small (<10k)",
+      "vessels": 151
+    },
+    {
+      "label": "Handysize (10-35k)",
+      "vessels": 1327
+    },
+    {
+      "label": "Handymax/Supramax (35-60k)",
+      "vessels": 2628
+    },
+    {
+      "label": "Panamax (60-100k)",
+      "vessels": 2948
+    },
+    {
+      "label": "Large (100-200k)",
+      "vessels": 753
+    },
+    {
+      "label": "Very Large (200k+)",
+      "vessels": 242
+    }
+  ],
+  "size_class_by_port": {
+    "labels": [
+      "Small (<10k)",
+      "Handysize (10-35k)",
+      "Handymax/Supramax (35-60k)",
+      "Panamax (60-100k)",
+      "Large (100-200k)",
+      "Very Large (200k+)"
+    ],
+    "ports": [
+      {
+        "port": "Paranaguá",
+        "data": [
+          86,
+          1116,
+          2194,
+          2390,
+          301,
+          2
+        ]
+      },
+      {
+        "port": "Itaguaí",
+        "data": [
+          46,
+          156,
+          207,
+          372,
+          470,
+          241
+        ]
+      },
+      {
+        "port": "Itaqui",
+        "data": [
+          47,
+          405,
+          1129,
+          1287,
+          51,
+          0
+        ]
+      }
+    ]
+  },
+  "cargo_mix": [
+    {
+      "label": "GRANEL SÓLIDO",
+      "calls": 13647
+    },
+    {
+      "label": "CARGA GERAL",
+      "calls": 10256
+    },
+    {
+      "label": "GRANEL LÍQUIDO",
+      "calls": 6759
+    },
+    {
+      "label": "Nao classificado",
+      "calls": 310
+    }
+  ],
+  "top_vessels": [
+    {
+      "name": "MAAS CONFIDENCE",
+      "imo": "9713210",
+      "dwt": 349140.0,
+      "port": "Itaguaí",
+      "calls": 3
+    },
+    {
+      "name": "MERIDIAN",
+      "imo": "9694402",
+      "dwt": 300840.0,
+      "port": "Paranaguá",
+      "calls": 1
+    },
+    {
+      "name": "CHINA STEEL BRILLIANCE",
+      "imo": "9849239",
+      "dwt": 241378.0,
+      "port": "Itaguaí",
+      "calls": 7
+    },
+    {
+      "name": "FAKARAVA",
+      "imo": "9634701",
+      "dwt": 236487.0,
+      "port": "Itaguaí",
+      "calls": 4
+    },
+    {
+      "name": "BULK SANTOS",
+      "imo": "9849772",
+      "dwt": 213276.0,
+      "port": "Itaguaí",
+      "calls": 2
+    },
+    {
+      "name": "CAPE BROLGA",
+      "imo": "9907469",
+      "dwt": 211982.0,
+      "port": "Itaguaí",
+      "calls": 2
+    },
+    {
+      "name": "RANGIROA",
+      "imo": "9634713",
+      "dwt": 211496.0,
+      "port": "Itaguaí",
+      "calls": 6
+    },
+    {
+      "name": "MARINI",
+      "imo": "9639529",
+      "dwt": 211225.0,
+      "port": "Itaguaí",
+      "calls": 10
+    },
+    {
+      "name": "LADY DAWN",
+      "imo": "9939369",
+      "dwt": 211041.0,
+      "port": "Itaguaí",
+      "calls": 8
+    },
+    {
+      "name": "LADY NEETI",
+      "imo": "9939357",
+      "dwt": 210941.0,
+      "port": "Itaguaí",
+      "calls": 12
+    },
+    {
+      "name": "BHANUMATI",
+      "imo": "9939345",
+      "dwt": 210940.0,
+      "port": "Itaguaí",
+      "calls": 10
+    },
+    {
+      "name": "SHANDONG HAPPINESS",
+      "imo": "9910789",
+      "dwt": 210938.0,
+      "port": "Itaguaí",
+      "calls": 4
+    },
+    {
+      "name": "BERGE BOBOTOV",
+      "imo": "9855226",
+      "dwt": 210914.0,
+      "port": "Itaguaí",
+      "calls": 2
+    },
+    {
+      "name": "GOLDEN SPRAY",
+      "imo": "9856945",
+      "dwt": 210667.0,
+      "port": "Itaguaí",
+      "calls": 10
+    },
+    {
+      "name": "XH TAIZHOU",
+      "imo": "9948114",
+      "dwt": 210204.0,
+      "port": "Itaguaí",
+      "calls": 4
+    }
+  ],
+  "recurrence": {
+    "single_call_vessels": 2917,
+    "recurring_vessels": 5588,
+    "max_calls": 227,
+    "top10pct_call_share": 43.9
+  },
+  "generated": "2026-07-01"
+};
+
+// Gerado por europe/benchmark. Brasil vs EU MRV 2024.
+window.EUROPE = {
+  "overlap_count": 4407,
+  "brazil_imos": 8505,
+  "brazil_in_mrv_pct": 51.8,
+  "mrv_total_ships": 14115,
+  "median_co2_per_nm": {
+    "brazil": 269.7,
+    "eu": 291.83
+  },
+  "median_co2_per_tw": {
+    "brazil": 9.4,
+    "eu": 11.96
+  },
+  "by_ship_type": [
+    {
+      "ship_type": "Bulk carrier",
+      "n_brazil": 2679,
+      "co2_nm_brazil": 264.36,
+      "co2_nm_eu": 263.55,
+      "co2_tw_brazil": 8.03,
+      "co2_tw_eu": 8.11
+    },
+    {
+      "ship_type": "Chemical tanker",
+      "n_brazil": 563,
+      "co2_nm_brazil": 264.66,
+      "co2_nm_eu": 252.58,
+      "co2_tw_brazil": 11.89,
+      "co2_tw_eu": 16.78
+    },
+    {
+      "ship_type": "General cargo ship",
+      "n_brazil": 370,
+      "co2_nm_brazil": 229.54,
+      "co2_nm_eu": 184.95,
+      "co2_tw_brazil": 21.33,
+      "co2_tw_eu": 25.85
+    },
+    {
+      "ship_type": "Oil tanker",
+      "n_brazil": 303,
+      "co2_nm_brazil": 297.24,
+      "co2_nm_eu": 405.53,
+      "co2_tw_brazil": 9.66,
+      "co2_tw_eu": 8.11
+    },
+    {
+      "ship_type": "Container ship",
+      "n_brazil": 288,
+      "co2_nm_brazil": 693.9,
+      "co2_nm_eu": 528.96,
+      "co2_tw_brazil": 13.88,
+      "co2_tw_eu": 17.75
+    },
+    {
+      "ship_type": "Other ship types",
+      "n_brazil": 80,
+      "co2_nm_brazil": 202.06,
+      "co2_nm_eu": 215.76,
+      "co2_tw_brazil": 33.73,
+      "co2_tw_eu": 52.61
+    }
+  ],
+  "generated": "2026-07-01"
+};
+
+/* logica */
+// Brazil Vessel Call Intelligence — shared front-end logic
+// Loads data/summary.json and fills any element with [data-kpi="path.to.value"].
+// Missing / null values render as a "Pending" placeholder so the shell works
+// before the real data is loaded.
+
+(function () {
+  "use strict";
+
+  function getPath(obj, path) {
+    return path.split(".").reduce(function (acc, key) {
+      return acc && acc[key] !== undefined ? acc[key] : undefined;
+    }, obj);
+  }
+
+  function formatValue(val, fmt) {
+    if (val === null || val === undefined || val === "") return null;
+    if (fmt === "int") return Number(val).toLocaleString("en-GB");
+    if (fmt === "pct") return Number(val).toLocaleString("en-GB") + "%";
+    if (fmt === "dwt") return Number(val).toLocaleString("en-GB") + " t";
+    return String(val);
+  }
+
+  function fillKpis(data) {
+    document.querySelectorAll("[data-kpi]").forEach(function (el) {
+      var raw = getPath(data, el.getAttribute("data-kpi"));
+      var out = formatValue(raw, el.getAttribute("data-fmt"));
+      if (out === null) {
+        el.textContent = "Pending";
+        el.classList.add("pending");
+      } else {
+        el.textContent = out;
+        el.classList.remove("pending");
+      }
+    });
+
+    var stamp = document.querySelector("[data-last-updated]");
+    if (stamp && data.meta && data.meta.last_updated) {
+      stamp.textContent = data.meta.last_updated;
+    }
+    var statusEl = document.querySelector("[data-data-status]");
+    if (statusEl && data.meta && data.meta.data_status) {
+      statusEl.textContent = data.meta.data_status;
+    }
+  }
+
+  function markActiveNav() {
+    var here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+    document.querySelectorAll(".nav-links a").forEach(function (a) {
+      var target = (a.getAttribute("href") || "").toLowerCase();
+      if (target === here || (here === "" && target === "index.html")) {
+        a.classList.add("active");
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    markActiveNav();
+    // Preferred: data injected via data/summary.js (works with file:// and when served).
+    if (window.SUMMARY) { fillKpis(window.SUMMARY); return; }
+    // Fallback: fetch the JSON (works when served over http).
+    fetch("data/summary.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(fillKpis)
+      .catch(function () {
+        console.info("summary not loaded; ensure data/summary.js is included.");
+      });
+  });
+})();
+
+// Bilingual EN/PT layer. Elements with data-i18n="key" get their text swapped.
+// Chart data values are translated via I18N.dataLabel(). A "langchange" event
+// is dispatched so charts.js can rebuild with the new labels.
+(function () {
+  "use strict";
+
+  var DICT = {
+    // shared
+    "brand.sub": { en: "IMO-based port & fleet analytics", pt: "Análise de portos e frota por IMO" },
+    "nav.overview": { en: "Overview", pt: "Visão geral" },
+    "nav.vessels": { en: "Vessel Explorer", pt: "Explorador de Navios" },
+    "nav.portcalls": { en: "Port Call Analytics", pt: "Análise de Atracações" },
+    "nav.emissions": { en: "Emissions & OPS", pt: "Emissões e OPS" },
+    "nav.dataquality": { en: "Data Quality", pt: "Qualidade de Dados" },
+    "footer.left": { en: "research & portfolio project by", pt: "projeto de pesquisa e portfólio de" },
+    "footer.proto": { en: "Prototype · figures indicative", pt: "Protótipo · números indicativos" },
+    "footer.data": { en: "Data: ANTAQ · DNV · VesselFinder · Prototype, figures indicative",
+                     pt: "Dados: ANTAQ · DNV · VesselFinder · Protótipo, números indicativos" },
+
+    // hero (index)
+    "hero.eyebrow": { en: "IMO-based data platform", pt: "Plataforma de dados por IMO" },
+    "hero.title": { en: "Port activity, fleet capacity and decarbonisation analytics for Brazilian ports",
+                    pt: "Atividade portuária, capacidade de frota e análise de descarbonização nos portos brasileiros" },
+    "hero.desc": { en: "An integrated intelligence layer that combines official port-call records with enriched vessel characteristics (IMO, DWT, type) to analyse fleet profiles, operational patterns and at-berth emissions across Brazil's port system.",
+                   pt: "Uma camada integrada que combina registros oficiais de atracação com características enriquecidas dos navios (IMO, DWT, tipo) para analisar perfil de frota, padrões operacionais e emissões atracado no sistema portuário brasileiro." },
+    "hero.cta1": { en: "Explore vessels", pt: "Explorar navios" },
+    "hero.cta2": { en: "Emissions & OPS potential", pt: "Emissões e potencial de OPS" },
+    "status.updated": { en: "Last updated:", pt: "Atualizado em:" },
+    "status.status": { en: "Status:", pt: "Status:" },
+    "status.coverage": { en: "DWT coverage:", pt: "Cobertura de DWT:" },
+
+    // overview KPIs
+    "ov.eyebrow": { en: "Executive overview", pt: "Visão executiva" },
+    "ov.keyfigures": { en: "Key figures", pt: "Números principais" },
+    "kpi.vessels": { en: "Unique vessels", pt: "Navios únicos" },
+    "kpi.vessels.sub": { en: "Distinct IMO numbers", pt: "IMOs distintos" },
+    "kpi.calls": { en: "Total port calls", pt: "Total de atracações" },
+    "kpi.calls.sub": { en: "Berthing events", pt: "Eventos de atracação" },
+    "kpi.dwt": { en: "Total DWT", pt: "DWT total" },
+    "kpi.dwt.sub": { en: "Potential capacity handled", pt: "Capacidade potencial movimentada" },
+    "kpi.ports": { en: "Ports covered", pt: "Portos cobertos" },
+    "kpi.ports.sub": { en: "Brazilian ports", pt: "Portos brasileiros" },
+    "kpi.cargo": { en: "Cargo types", pt: "Tipos de carga" },
+    "kpi.cargo.sub": { en: "Liquid, dry bulk, container…", pt: "Líquido, sólido, contêiner…" },
+    "kpi.cov": { en: "DWT coverage", pt: "Cobertura de DWT" },
+    "kpi.cov.sub": { en: "Vessels with DWT found", pt: "Navios com DWT encontrado" },
+
+    // fleet section + charts
+    "sec.fleet": { en: "Fleet profile & capacity", pt: "Perfil de frota e capacidade" },
+    "ch.capbyport": { en: "Capacity handled by port", pt: "Capacidade movimentada por porto" },
+    "ch.capbyport.h": { en: "Sum of unique-vessel DWT calling at each port", pt: "Soma do DWT dos navios únicos que atracam em cada porto" },
+    "ch.fleetsize": { en: "Fleet size by port", pt: "Tamanho da frota por porto" },
+    "ch.fleetsize.h": { en: "Distinct vessels (IMO) per port", pt: "Navios distintos (IMO) por porto" },
+    "ch.sizeclass": { en: "Fleet by DWT size class", pt: "Frota por classe de DWT" },
+    "ch.sizeclass.h": { en: "Distinct vessels grouped by deadweight", pt: "Navios distintos agrupados por porte" },
+    "ch.cargomix": { en: "Cargo mix", pt: "Mix de carga" },
+    "ch.cargomix.h": { en: "Port calls by cargo nature", pt: "Atracações por natureza da carga" },
+    "ch.sizebyport": { en: "Fleet by DWT size class, per port", pt: "Frota por classe de DWT, por porto" },
+    "ch.sizebyport.h": { en: "Distinct vessels by deadweight class, stacked by port", pt: "Navios distintos por classe de porte, empilhados por porto" },
+    "ch.avgdwt": { en: "Average vessel size by port", pt: "Tamanho médio do navio por porto" },
+    "ch.avgdwt.h": { en: "Mean DWT of the calling fleet", pt: "DWT médio da frota que atraca" },
+    "ch.top15": { en: "Top 15 vessels by DWT", pt: "15 maiores navios por DWT" },
+    "ch.top15.h": { en: "Largest vessels calling at the three ports", pt: "Maiores navios que atracam nos três portos" },
+
+    // modules
+    "sec.modules": { en: "Platform modules", pt: "Módulos da plataforma" },
+    "m1.t": { en: "Brazil Vessel Overview", pt: "Visão Geral dos Navios" },
+    "m1.d": { en: "Executive dashboard: total vessels, port calls, DWT, ports and cargo mix at a glance.",
+              pt: "Painel executivo: total de navios, atracações, DWT, portos e mix de carga num relance." },
+    "m1.go": { en: "You are here →", pt: "Você está aqui →" },
+    "m2.t": { en: "Vessel Explorer", pt: "Explorador de Navios" },
+    "m2.d": { en: "Search by IMO, name, DWT, type and call history. A filterable data product over the fleet.",
+              pt: "Busca por IMO, nome, DWT, tipo e histórico de atracações. Um produto de dados filtrável sobre a frota." },
+    "m3.t": { en: "Port Call Analytics", pt: "Análise de Atracações" },
+    "m3.d": { en: "Rankings of ports, terminals, months, cargo and call frequency. Maritime activity analysis.",
+              pt: "Rankings de portos, terminais, meses, carga e frequência de atracação. Análise da atividade marítima." },
+    "m4.t": { en: "Emissions & OPS Potential", pt: "Emissões e Potencial de OPS" },
+    "m4.d": { en: "Estimated at-berth CO₂, avoidable emissions and shore-power (OPS) prioritisation by port.",
+              pt: "CO₂ estimado atracado, emissões evitáveis e priorização de energia em terra (OPS) por porto." },
+    "m5.t": { en: "Data Quality Monitor", pt: "Monitor de Qualidade de Dados" },
+    "m5.d": { en: "DWT coverage, source provenance, gaps and inconsistencies. Data-engineering maturity in view.",
+              pt: "Cobertura de DWT, procedência das fontes, lacunas e inconsistências. Maturidade em engenharia de dados." },
+    "m.open": { en: "Open module →", pt: "Abrir módulo →" },
+
+    // about
+    "sec.about": { en: "About this platform", pt: "Sobre a plataforma" },
+    "about.p": { en: "This platform integrates official Brazilian port-call data (ANTAQ) with an IMO-based vessel master enriched from public sources such as DNV and VesselFinder. The goal is to turn a raw vessel-name and DWT capture into a professional analytical product covering four indicator families:",
+                 pt: "Esta plataforma integra dados oficiais de atracação (ANTAQ) com um cadastro de navios por IMO enriquecido por fontes públicas como DNV e VesselFinder. O objetivo é transformar a captura bruta de nome e DWT num produto analítico profissional que cobre quatro famílias de indicadores:" },
+    "about.a": { en: "A. Fleet profile — unique vessels, total and average DWT, largest-vessel ranking, return frequency and fleet concentration.",
+                 pt: "A. Perfil de frota: navios únicos, DWT total e médio, ranking dos maiores navios, frequência de retorno e concentração da frota." },
+    "about.b": { en: "B. Operational — calls per port and per month, dwell time, calls by terminal/berth and seasonal peaks.",
+                 pt: "B. Operacional: atracações por porto e por mês, tempo atracado, atracações por terminal ou berço e picos sazonais." },
+    "about.c": { en: "C. Environmental — estimated CO₂ per vessel, per dwell hour and per DWT; highest-emission ports and OPS (shore-power) potential.",
+                 pt: "C. Ambiental: CO₂ estimado por navio, por hora atracado e por DWT; portos com maior emissão e potencial de OPS (energia em terra)." },
+    "about.d": { en: "D. Data quality — DWT coverage, missing records, source divergence and duplicate detection.",
+                 pt: "D. Qualidade de dados: cobertura de DWT, registros ausentes, divergência entre fontes e detecção de duplicidades." },
+
+    // vessel explorer
+    "ve.eyebrow": { en: "Module 2 · Data product", pt: "Módulo 2 · Produto de dados" },
+    "ve.title": { en: "Vessel Explorer", pt: "Explorador de Navios" },
+    "ve.desc": { en: "Search and filter the fleet by IMO, name, DWT, type and call history. Fleet profile and capacity across the ports in the study.",
+                 pt: "Busque e filtre a frota por IMO, nome, DWT, tipo e histórico de atracações. Perfil de frota e capacidade nos portos do estudo." },
+    "st.vessels": { en: "Unique vessels", pt: "Navios únicos" },
+    "st.recurring": { en: "Recurring vessels", pt: "Navios recorrentes" },
+    "st.single": { en: "Single-call vessels", pt: "Navios de escala única" },
+    "st.top10": { en: "Call share of top 10%", pt: "Escalas dos 10% maiores" },
+    "st.maxcalls": { en: "Most calls by one vessel", pt: "Mais escalas por um navio" },
+    "ve.table": { en: "Largest vessels, detail", pt: "Maiores navios, detalhe" },
+    "ve.table.h": { en: "Ranked by deadweight, with number of calls in the period.", pt: "Ordenados por porte, com número de escalas no período." },
+    "th.vessel": { en: "Vessel", pt: "Navio" },
+    "th.port": { en: "Port", pt: "Porto" },
+    "th.calls": { en: "Calls", pt: "Escalas" },
+
+    // shell pages (page-head)
+    "pca.eyebrow": { en: "Module 3 · Maritime analytics", pt: "Módulo 3 · Análise marítima" },
+    "pca.title": { en: "Port Call Analytics", pt: "Análise de Atracações" },
+    "pca.desc": { en: "Rankings of ports, terminals, months, cargo and call frequency to describe activity and seasonality across the Brazilian port system.",
+                  pt: "Rankings de portos, terminais, meses, carga e frequência de atracação para descrever a atividade e a sazonalidade no sistema portuário brasileiro." },
+    "em.eyebrow": { en: "Module 4 · Climate analytics", pt: "Módulo 4 · Análise climática" },
+    "em.title": { en: "Emissions & OPS Potential", pt: "Emissões e Potencial de OPS" },
+    "em.desc": { en: "Estimated at-berth CO₂ emissions and shore-power (OPS) prioritisation. Emissions are derived from auxiliary power, dwell time and an emission factor per vessel call.",
+                 pt: "Emissões de CO₂ estimadas atracado e priorização de energia em terra (OPS). As emissões vêm da potência auxiliar, do tempo atracado e de um fator de emissão por atracação." },
+    "dq.eyebrow": { en: "Module 5 · Data engineering", pt: "Módulo 5 · Engenharia de dados" },
+    "dq.title": { en: "Data Quality Monitor", pt: "Monitor de Qualidade de Dados" },
+    "dq.desc": { en: "Coverage, provenance and consistency of the IMO-based vessel dataset. This module documents enrichment progress and validation across public and external sources.",
+                 pt: "Cobertura, procedência e consistência da base de navios por IMO. Este módulo documenta o avanço do enriquecimento e a validação entre fontes públicas e externas." },
+
+    // Europe benchmark
+    "eu.title": { en: "Europe benchmark (EU MRV)", pt: "Benchmark Europa (EU MRV)" },
+    "eu.desc": { en: "Vessels calling at the Brazilian ports that also report verified CO₂ under the EU MRV scheme, compared against the full European fleet.",
+                 pt: "Navios que atracam nos portos brasileiros e que também reportam CO₂ verificado no EU MRV, comparados com a frota europeia completa." },
+    "eu.brazil": { en: "Brazil-operating", pt: "Operando no Brasil" },
+    "eu.europe": { en: "Europe (EU MRV)", pt: "Europa (EU MRV)" },
+    "eu.st.overlap": { en: "Vessels in both datasets", pt: "Navios nas duas bases" },
+    "eu.st.pct": { en: "Brazil fleet also in EU MRV", pt: "Frota BR também no EU MRV" },
+    "eu.st.brnm": { en: "Median CO₂/nm, Brazil-operating", pt: "CO₂/nm mediano, operando no Brasil" },
+    "eu.st.eunm": { en: "Median CO₂/nm, EU fleet", pt: "CO₂/nm mediano, frota UE" },
+    "eu.chart": { en: "CO₂ per transport work by ship type (g CO₂ / t·nm)", pt: "CO₂ por trabalho de transporte, por tipo de navio (g CO₂ / t·milha)" },
+    "eu.chart.h": { en: "Lower is more efficient. Median of each fleet.", pt: "Menor é mais eficiente. Mediana de cada frota." }
+  };
+
+  // data-value labels (cargo nature) translated on the fly
+  var DATA_LABELS = {
+    "GRANEL SÓLIDO": { en: "Dry bulk", pt: "Granel sólido" },
+    "GRANEL LÍQUIDO": { en: "Liquid bulk", pt: "Granel líquido" },
+    "CARGA GERAL": { en: "General cargo", pt: "Carga geral" },
+    "Nao classificado": { en: "Unclassified", pt: "Não classificado" },
+    "Não classificado": { en: "Unclassified", pt: "Não classificado" },
+    "Small (<10k)": { en: "Small (<10k)", pt: "Pequeno (<10k)" },
+    "Handysize (10-35k)": { en: "Handysize (10-35k)", pt: "Handysize (10-35k)" },
+    "Handymax/Supramax (35-60k)": { en: "Handymax/Supramax (35-60k)", pt: "Handymax/Supramax (35-60k)" },
+    "Panamax (60-100k)": { en: "Panamax (60-100k)", pt: "Panamax (60-100k)" },
+    "Large (100-200k)": { en: "Large (100-200k)", pt: "Grande (100-200k)" },
+    "Very Large (200k+)": { en: "Very Large (200k+)", pt: "Muito grande (200k+)" }
+  };
+
+  // Translate-by-text: elements marked data-t keep English as canonical and
+  // are looked up here for PT. Avoids inventing a key per phrase.
+  var PHRASE = {
+    "% vessels with DWT found": "% de navios com DWT encontrado",
+    "% without DWT": "% sem DWT",
+    "68.4% (checkpoint)": "68,4% (checkpoint)",
+    "Aux. power × berthing hours × emission factor": "Potência auxiliar × horas atracado × fator de emissão",
+    "Avg. dwell by cargo": "Tempo médio atracado por carga",
+    "Avoidable emissions during berthing": "Emissões evitáveis durante a atracação",
+    "CO₂ per DWT": "CO₂ por DWT",
+    "CO₂ per berthing hour": "CO₂ por hora atracado",
+    "CO₂ per vessel": "CO₂ por navio",
+    "CO₂ ÷ berthing hours": "CO₂ ÷ horas atracado",
+    "CO₂ ÷ vessel capacity": "CO₂ ÷ capacidade do navio",
+    "Calls by terminal / berth": "Atracações por terminal ou berço",
+    "Calls per month": "Atracações por mês",
+    "Calls per month across the period.": "Atracações por mês ao longo do período.",
+    "Calls per port": "Atracações por porto",
+    "Carbon accounting": "Contabilidade de carbono",
+    "Climate prioritisation": "Priorização climática",
+    "Count by facility": "Contagem por instalação",
+    "Count of calls by port": "Contagem de atracações por porto",
+    "Coverage by vessel type": "Cobertura por tipo de navio",
+    "DNV, VesselFinder, other": "DNV, VesselFinder, outras",
+    "DWT found per category": "DWT encontrado por categoria",
+    "Data quality indicators": "Indicadores de qualidade de dados",
+    "Definition": "Definição",
+    "Departure minus arrival": "Desatracação menos atracação",
+    "Duplicate IMO": "IMO duplicado",
+    "Duplicate name": "Nome duplicado",
+    "Dwell time": "Tempo atracado",
+    "Efficiency indicator": "Indicador de eficiência",
+    "Electrification planning": "Planejamento de eletrificação",
+    "Environmental indicators": "Indicadores ambientais",
+    "Environmental management": "Gestão ambiental",
+    "Family B — computed from the port-call table.": "Família B: calculada a partir da tabela de atracações.",
+    "Family C — carbon accounting per vessel call.": "Família C: contabilidade de carbono por atracação.",
+    "Family D — computed from the vessel master and enrichment log.": "Família D: calculada a partir do cadastro de navios e do log de enriquecimento.",
+    "Highest-emission ports": "Portos com maior emissão",
+    "How it is calculated": "Como é calculado",
+    "Indicator": "Indicador",
+    "Mean per cargo category": "Média por categoria de carga",
+    "Methodology note": "Nota metodológica",
+    "Monthly count": "Contagem mensal",
+    "Monthly seasonality": "Sazonalidade mensal",
+    "Months/weeks with highest frequency": "Meses ou semanas com maior frequência",
+    "OPS potential": "Potencial de OPS",
+    "Operation peaks": "Picos de operação",
+    "Operational comparison": "Comparação operacional",
+    "Operational efficiency": "Eficiência operacional",
+    "Operational indicators": "Indicadores operacionais",
+    "Operational intensity": "Intensidade operacional",
+    "Operational pressure": "Pressão operacional",
+    "Port activity ranking": "Ranking de atividade portuária",
+    "Port planning": "Planejamento portuário",
+    "Port ranking": "Ranking de portos",
+    "Rank by estimated CO₂": "Ordenar por CO₂ estimado",
+    "Same IMO, different names": "Mesmo IMO, nomes diferentes",
+    "Same name, different IMO": "Mesmo nome, IMO diferente",
+    "Seasonality": "Sazonalidade",
+    "Share of IMO with a DWT value": "Proporção de IMO com valor de DWT",
+    "Source divergence": "Divergência entre fontes",
+    "Sources used": "Fontes utilizadas",
+    "Status": "Status",
+    "Sum of CO₂ by port": "Soma de CO₂ por porto",
+    "To compute": "A calcular",
+    "Top emitting vessels": "Navios com maior emissão",
+    "Top ports by number of calls.": "Principais portos por número de atracações.",
+    "Tracked": "Rastreado",
+    "Two sources with different DWT": "Duas fontes com DWT diferente",
+    "Use": "Uso",
+    "Validation workflow": "Fluxo de validação",
+    "Vessels needing a new search": "Navios que precisam de nova busca",
+    "Bar chart of calls per port renders here.": "O gráfico de barras de atracações por porto aparece aqui.",
+    "Time-series of monthly calls renders here.": "A série temporal de atracações mensais aparece aqui.",
+    "conflict": "conflito",
+    "found": "encontrado",
+    "manual_review": "revisão manual",
+    "not_found": "não encontrado",
+    "Busiest port": "Porto mais movimentado",
+    "By number of calls": "Por número de atracações",
+    "Avg. dwell time": "Tempo médio atracado",
+    "Hours at berth": "Horas no berço",
+    "Peak month": "Mês de pico",
+    "Highest call frequency": "Maior frequência de atracações",
+    "Estimated CO₂": "CO₂ estimado",
+    "Tonnes at berth": "Toneladas atracado",
+    "CO₂ / dwell hour": "CO₂ por hora atracado",
+    "Top-emitting port": "Porto de maior emissão",
+    "Climate priority": "Prioridade climática",
+    "OPS-avoidable CO₂": "CO₂ evitável por OPS",
+    "Tonnes, shore power": "Toneladas, energia em terra",
+    "DWT found": "DWT encontrado",
+    "Coverage at last checkpoint": "Cobertura no último checkpoint",
+    "DWT missing": "DWT ausente",
+    "Requires new search": "Requer nova busca",
+    "Manual review": "Revisão manual",
+    "Flagged records": "Registros sinalizados",
+    "Sources": "Fontes",
+    "Provenance tracked": "Procedência rastreada",
+    "At-berth CO₂ is estimated as auxiliary_power_kW × berthing_hours × emission_factor. OPS-avoidable emissions assume grid-supplied shore power replaces auxiliary engines during berthing. Emission factors and auxiliary loads are documented per fuel type in the emissions dataset.":
+      "O CO₂ atracado é estimado como potência_auxiliar_kW × horas_atracado × fator_de_emissão. As emissões evitáveis por OPS assumem que a energia da rede em terra substitui os motores auxiliares durante a atracação. Fatores de emissão e cargas auxiliares são documentados por tipo de combustível na base de emissões.",
+    "Each record carries a validation status: found, not_found, manual_review, conflict. The enrichment log feeds the coverage figures above.":
+      "Cada registro carrega um status de validação: encontrado, não encontrado, revisão manual, conflito. O log de enriquecimento alimenta os números de cobertura acima."
+  };
+
+  var STORAGE = "bvci_lang";
+  function saved() {
+    try { return localStorage.getItem(STORAGE); } catch (e) { return null; }
+  }
+  function store(l) { try { localStorage.setItem(STORAGE, l); } catch (e) {} }
+
+  var current = saved() || "en";
+
+  function t(key) {
+    var e = DICT[key];
+    return e ? (e[current] || e.en) : key;
+  }
+  function dataLabel(v) {
+    var e = DATA_LABELS[v];
+    return e ? (e[current] || e.en) : v;
+  }
+
+  function apply() {
+    document.documentElement.lang = (current === "pt") ? "pt-BR" : "en-GB";
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    // translate-by-text elements
+    document.querySelectorAll("[data-t]").forEach(function (el) {
+      if (!el.dataset.en) el.dataset.en = el.textContent.trim();
+      var en = el.dataset.en;
+      el.textContent = (current === "pt") ? (PHRASE[en] || en) : en;
+    });
+    var btn = document.getElementById("langToggle");
+    if (btn) btn.textContent = (current === "en") ? "PT" : "EN";
+    document.dispatchEvent(new CustomEvent("langchange", { detail: { lang: current } }));
+  }
+
+  function toggle() {
+    current = (current === "en") ? "pt" : "en";
+    store(current);
+    apply();
+  }
+
+  window.I18N = {
+    get lang() { return current; },
+    t: t, dataLabel: dataLabel, apply: apply, toggle: toggle
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("langToggle");
+    if (btn) btn.addEventListener("click", toggle);
+    apply();
+  });
+})();
+
+// Renders fleet-profile charts from window.DASHBOARD. Language-aware: rebuilds
+// on the "langchange" event. Requires Chart.js, data/dashboard.js and i18n.js.
+(function () {
+  "use strict";
+  if (typeof Chart === "undefined") return;
+  if (!window.DASHBOARD && !window.EUROPE) return;
+
+  var NAVY = "#0b2239", TEAL = "#0fb5ba", TEALD = "#0a8f93";
+  var PALETTE = ["#0b2239", "#0fb5ba", "#e8a33d", "#2fa36b", "#7b6cf6", "#d6584f", "#5b6b78"];
+  var D = window.DASHBOARD;
+  var registry = [];
+
+  Chart.defaults.font.family = '"Segoe UI", Helvetica, Arial, sans-serif';
+  Chart.defaults.color = "#5b6b78";
+
+  function lang() { return window.I18N ? window.I18N.lang : "en"; }
+  function DL(v) { return window.I18N ? window.I18N.dataLabel(v) : v; }
+  var UNITS = {
+    vessels: { en: "vessels", pt: "navios" },
+    dwt: { en: "t DWT", pt: "t DWT" },
+  };
+  function U(k) { return UNITS[k][lang()] || UNITS[k].en; }
+  function fmt(n) { return (n === null || n === undefined) ? "" : Number(n).toLocaleString(lang() === "pt" ? "pt-BR" : "en-GB"); }
+  function el(id) { return document.getElementById(id); }
+
+  function make(id, config) {
+    var c = el(id);
+    if (c) registry.push(new Chart(c.getContext("2d"), config));
+  }
+
+  var noLegend = { legend: { display: false } };
+  var baseOpts = { responsive: true, maintainAspectRatio: false };
+
+  function buildAll() {
+    registry.forEach(function (ch) { ch.destroy(); });
+    registry = [];
+
+    if (window.DASHBOARD) buildDashboard();
+    if (window.EUROPE) buildEurope();
+  }
+
+  function buildDashboard() {
+    make("chart-dwt-by-port", {
+      type: "bar",
+      data: {
+        labels: D.by_port.map(function (p) { return p.port; }),
+        datasets: [{ data: D.by_port.map(function (p) { return p.total_dwt_capacity; }), backgroundColor: TEAL, borderRadius: 6 }],
+      },
+      options: Object.assign({}, baseOpts, {
+        plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " t"; } } } }),
+        scales: { y: { ticks: { callback: function (v) { return (v / 1e6) + "M"; } } } },
+      }),
+    });
+
+    make("chart-vessels-by-port", {
+      type: "bar",
+      data: {
+        labels: D.by_port.map(function (p) { return p.port; }),
+        datasets: [{ data: D.by_port.map(function (p) { return p.unique_vessels; }), backgroundColor: NAVY, borderRadius: 6 }],
+      },
+      options: Object.assign({}, baseOpts, { plugins: noLegend }),
+    });
+
+    make("chart-size-class", {
+      type: "bar",
+      data: {
+        labels: D.size_class.map(function (s) { return DL(s.label); }),
+        datasets: [{ data: D.size_class.map(function (s) { return s.vessels; }), backgroundColor: TEALD, borderRadius: 6 }],
+      },
+      options: Object.assign({}, baseOpts, {
+        indexAxis: "y",
+        plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " " + U("vessels"); } } } }),
+      }),
+    });
+
+    if (D.size_class_by_port) {
+      var sbp = D.size_class_by_port;
+      make("chart-size-class-by-port", {
+        type: "bar",
+        data: {
+          labels: sbp.labels.map(function (l) { return DL(l); }),
+          datasets: sbp.ports.map(function (p, i) {
+            return { label: p.port, data: p.data, backgroundColor: PALETTE[i % PALETTE.length], borderRadius: 4 };
+          }),
+        },
+        options: Object.assign({}, baseOpts, {
+          indexAxis: "y",
+          plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } } },
+          scales: { x: { stacked: true }, y: { stacked: true } },
+        }),
+      });
+    }
+
+    make("chart-cargo-mix", {
+      type: "doughnut",
+      data: {
+        labels: D.cargo_mix.map(function (c) { return DL(c.label); }),
+        datasets: [{ data: D.cargo_mix.map(function (c) { return c.calls; }), backgroundColor: PALETTE }],
+      },
+      options: Object.assign({}, baseOpts, {
+        cutout: "58%",
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } } },
+      }),
+    });
+
+    make("chart-avg-dwt", {
+      type: "bar",
+      data: {
+        labels: D.by_port.map(function (p) { return p.port; }),
+        datasets: [{ data: D.by_port.map(function (p) { return p.avg_dwt; }), backgroundColor: "#e8a33d", borderRadius: 6 }],
+      },
+      options: Object.assign({}, baseOpts, {
+        plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " t"; } } } }),
+      }),
+    });
+
+    if (el("chart-top-vessels")) {
+      make("chart-top-vessels", {
+        type: "bar",
+        data: {
+          labels: D.top_vessels.map(function (v) { return v.name; }),
+          datasets: [{ data: D.top_vessels.map(function (v) { return v.dwt; }), backgroundColor: TEAL, borderRadius: 5 }],
+        },
+        options: Object.assign({}, baseOpts, {
+          indexAxis: "y",
+          plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " " + U("dwt"); } } } }),
+        }),
+      });
+    }
+  }
+
+  function buildEurope() {
+    var E = window.EUROPE;
+    var tBr = window.I18N ? window.I18N.t("eu.brazil") : "Brazil";
+    var tEu = window.I18N ? window.I18N.t("eu.europe") : "Europe (EU MRV)";
+    if (el("chart-europe-type") && E.by_ship_type) {
+      make("chart-europe-type", {
+        type: "bar",
+        data: {
+          labels: E.by_ship_type.map(function (r) { return r.ship_type; }),
+          datasets: [
+            { label: tBr, data: E.by_ship_type.map(function (r) { return r.co2_tw_brazil; }), backgroundColor: TEAL, borderRadius: 4 },
+            { label: tEu, data: E.by_ship_type.map(function (r) { return r.co2_tw_eu; }), backgroundColor: NAVY, borderRadius: 4 },
+          ],
+        },
+        options: Object.assign({}, baseOpts, {
+          plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } },
+                     tooltip: { callbacks: { label: function (c) { return c.dataset.label + ": " + fmt(c.raw) + " g/t·nm"; } } } },
+        }),
+      });
+    }
+    function st(id, v) { var e = el(id); if (e) e.textContent = v; }
+    st("eu-overlap", fmt(E.overlap_count));
+    st("eu-pct", E.brazil_in_mrv_pct + "%");
+    st("eu-co2nm-br", fmt(E.median_co2_per_nm.brazil));
+    st("eu-co2nm-eu", fmt(E.median_co2_per_nm.eu));
+  }
+
+  function fillStatic() {
+    var tb = el("table-top-vessels");
+    if (tb) {
+      tb.innerHTML = D.top_vessels.map(function (v, i) {
+        return "<tr><td>" + (i + 1) + "</td><td class='metric'>" + v.name +
+          "</td><td>" + v.imo + "</td><td>" + fmt(v.dwt) + " t</td><td>" + v.port +
+          "</td><td>" + v.calls + "</td></tr>";
+      }).join("");
+    }
+    function setText(id, val) { var e = el(id); if (e) e.textContent = val; }
+    if (D && D.recurrence) {
+      setText("stat-recurring", fmt(D.recurrence.recurring_vessels));
+      setText("stat-single", fmt(D.recurrence.single_call_vessels));
+      setText("stat-top10", D.recurrence.top10pct_call_share + "%");
+      setText("stat-maxcalls", fmt(D.recurrence.max_calls));
+    }
+  }
+
+  function render() { buildAll(); fillStatic(); }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", render);
+  } else {
+    render();
+  }
+  document.addEventListener("langchange", render);
+})();
+
+</script>
+</body>
+</html>
