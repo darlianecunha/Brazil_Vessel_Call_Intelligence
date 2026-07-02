@@ -265,6 +265,25 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
 .site-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .site-footer strong { color: var(--navy); }
 
+/* Vessel search (Vessel Explorer) */
+.vessel-search-input {
+  width: 100%; box-sizing: border-box; padding: 11px 14px; font: 15px var(--font);
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; outline: none;
+}
+.vessel-search-input:focus { border-color: var(--teal); background: #fff; }
+.vessel-search-results { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.vessel-result {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 9px 12px; font: 14px var(--font); color: var(--ink); background: #fff;
+  border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+.vessel-result:hover { border-color: var(--teal); background: #f4fbfb; }
+.vessel-result .meta { color: var(--muted); font-size: 12px; flex: 1; }
+.vessel-detail { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.vessel-detail-head { display: flex; align-items: center; gap: 12px; }
+.vessel-detail-head h3 { margin: 0; font-size: 18px; color: var(--navy); }
+
 </style>
 </head>
 <body>
@@ -294,25 +313,31 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi"><div class="label" data-t>Estimated CO₂</div><div class="value" data-kpi="emissions.total_co2_estimated_t" data-fmt="int" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes at berth</div></div>
-        <div class="kpi"><div class="label" data-t>CO₂ / dwell hour</div><div class="value" data-kpi="emissions.avg_co2_per_dwell_hour" style="font-size:22px">Pending</div><div class="sub" data-t>Operational intensity</div></div>
+        <div class="kpi"><div class="label" data-t>Estimated CO₂ (OPS-avoidable)</div><div class="value" data-kpi="emissions.total_co2_estimated_t" data-fmt="int" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes, at-berth auxiliary engines</div></div>
+        <div class="kpi"><div class="label" data-t>CO₂ / dwell hour</div><div class="value" data-kpi="emissions.avg_co2_per_dwell_hour" style="font-size:22px">Pending</div><div class="sub" data-t>At-berth auxiliary engines</div></div>
         <div class="kpi"><div class="label" data-t>Top-emitting port</div><div class="value" data-kpi="emissions.top_emitting_port" style="font-size:20px">Pending</div><div class="sub" data-t>Climate priority</div></div>
-        <div class="kpi"><div class="label" data-t>OPS-avoidable CO₂</div><div class="value" data-kpi="emissions.ops_avoidable_t" data-fmt="int" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes, shore power</div></div>
+        <div class="kpi"><div class="label" data-t>Avg CO₂ per call</div><div class="value" data-kpi="emissions.avg_co2_per_call_t" style="font-size:22px">Pending</div><div class="sub" data-t>Tonnes per port call</div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h3 data-i18n="em.ch.co2port">CO₂ by port</h3>
+          <p class="hint" data-i18n="em.ch.co2port.h">Estimated tonnes in the period (HFO scenario), with the OPS-avoidable share</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-co2-by-port"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h3 data-i18n="em.ch.co2hour">CO₂ per berthing hour</h3>
+          <p class="hint" data-i18n="em.ch.co2hour.h">Operational carbon intensity per port (t CO₂ / h)</p>
+          <div class="chart-canvas-wrap"><canvas id="chart-co2-per-hour"></canvas></div>
+        </div>
       </div>
 
       <div class="panel">
-        <h2 data-t>Environmental indicators</h2>
-        <p class="hint" data-t>Family C — carbon accounting per vessel call.</p>
+        <h2 data-i18n="em.topemit">Top 10 emitting vessels</h2>
+        <p class="hint" data-i18n="em.topemit.h">Cumulative estimated CO₂ across all calls in the period (HFO scenario).</p>
         <table class="data">
-          <thead><tr><th data-t>Indicator</th><th data-t>How it is calculated</th><th data-t>Use</th></tr></thead>
-          <tbody>
-            <tr><td class="metric" data-t>CO₂ per vessel</td><td data-t>Aux. power × berthing hours × emission factor</td><td data-t>Carbon accounting</td></tr>
-            <tr><td class="metric" data-t>CO₂ per berthing hour</td><td data-t>CO₂ ÷ berthing hours</td><td data-t>Operational intensity</td></tr>
-            <tr><td class="metric" data-t>CO₂ per DWT</td><td data-t>CO₂ ÷ vessel capacity</td><td data-t>Efficiency indicator</td></tr>
-            <tr><td class="metric" data-t>Highest-emission ports</td><td data-t>Sum of CO₂ by port</td><td data-t>Climate prioritisation</td></tr>
-            <tr><td class="metric" data-t>OPS potential</td><td data-t>Avoidable emissions during berthing</td><td data-t>Electrification planning</td></tr>
-            <tr><td class="metric" data-t>Top emitting vessels</td><td data-t>Rank by estimated CO₂</td><td data-t>Environmental management</td></tr>
-          </tbody>
+          <thead><tr><th>#</th><th data-i18n="th.vessel">Vessel</th><th>IMO</th><th data-i18n="em.th.co2">CO₂ (t)</th><th data-i18n="th.calls">Calls</th><th data-i18n="em.th.ports">Ports</th></tr></thead>
+          <tbody id="table-top-emitters"></tbody>
         </table>
       </div>
 
@@ -330,9 +355,55 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
         <div class="chart-canvas-wrap"><canvas id="chart-europe-type"></canvas></div>
       </div>
 
+      <h2 class="section-title" data-i18n="ev.title">Model validation, verified EU data</h2>
+      <p class="page-head" style="margin:-6px 0 16px;color:var(--muted);font-size:14px" data-i18n="ev.desc">The same fleet that calls at the Brazilian ports reports verified at-berth CO₂ in EU ports (EU MRV 2024). Applying our estimated auxiliary-engine rates to those verified totals implies how many days per year each vessel would have spent at berth in Europe. Plausible durations indicate the model's rates are consistent with verified data.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><div class="n" id="ev-n">–</div><div class="l" data-i18n="ev.st.n">Vessels compared</div></div>
+        <div class="stat-chip"><div class="n" id="ev-days">–</div><div class="l" data-i18n="ev.st.days">Implied EU berth days/yr, median</div></div>
+        <div class="stat-chip"><div class="n" id="ev-iqr">–</div><div class="l" data-i18n="ev.st.iqr">Interquartile range</div></div>
+        <div class="stat-chip"><div class="n" id="ev-corr">–</div><div class="l" data-i18n="ev.st.corr">Rank correlation, rate × verified</div></div>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="ev.table">Validation by ship type</h2>
+        <p class="hint" data-i18n="ev.table.h">Medians per ship type: our estimated auxiliary rate in Brazil, the verified annual at-berth CO₂ in EU ports, and the implied berth days per year.</p>
+        <table class="data">
+          <thead><tr>
+            <th data-i18n="ev.th.type">Ship type</th>
+            <th data-i18n="ev.th.n">Vessels</th>
+            <th data-i18n="ev.th.rate">Our rate (t CO₂/h)</th>
+            <th data-i18n="ev.th.eu">EU verified at berth (t/yr)</th>
+            <th data-i18n="ev.th.days">Implied berth days/yr</th>
+          </tr></thead>
+          <tbody id="table-eu-valid"></tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title" data-i18n="ets.title">EU carbon-cost exposure of the fleet serving Brazil</h2>
+      <p class="page-head" style="margin:-6px 0 16px;color:var(--muted);font-size:14px" data-i18n="ets.desc">Vessels calling at the Brazilian ports also fall under the EU Emissions Trading System when they trade with Europe. Their verified ETS-scoped CO₂ (EU MRV 2024) priced at the current allowance value shows how much European carbon cost travels with the fleet that serves Brazilian trade lanes.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><div class="n" id="ets-n">–</div><div class="l" data-i18n="ets.st.n">Vessels under EU ETS</div></div>
+        <div class="stat-chip"><div class="n" id="ets-co2">–</div><div class="l" data-i18n="ets.st.co2">ETS-scoped CO₂ (t/yr)</div></div>
+        <div class="stat-chip"><div class="n" id="ets-cost">–</div><div class="l" data-i18n="ets.st.cost">Exposure at current EUA price</div></div>
+        <div class="stat-chip"><div class="n" id="ets-median">–</div><div class="l" data-i18n="ets.st.median">Median cost per vessel</div></div>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="ets.table">ETS exposure by ship type</h2>
+        <p class="hint" data-i18n="ets.table.h">Verified 2024 ETS-scoped emissions of the Brazil-calling fleet. Surrender obligation: 40% for 2024, 70% for 2025, 100% from 2026.</p>
+        <table class="data">
+          <thead><tr>
+            <th data-i18n="ev.th.type">Ship type</th>
+            <th data-i18n="ev.th.n">Vessels</th>
+            <th data-i18n="ets.th.total">ETS CO₂, total (t)</th>
+            <th data-i18n="ets.th.med">Median per vessel (t)</th>
+            <th data-i18n="ets.th.cost">Median cost (€/yr)</th>
+          </tr></thead>
+          <tbody id="table-ets"></tbody>
+        </table>
+      </div>
+
       <div class="panel">
         <h2 data-t>Methodology note</h2>
-        <p class="hint" style="margin-bottom:0" data-t>At-berth CO₂ is estimated as auxiliary_power_kW × berthing_hours × emission_factor. OPS-avoidable emissions assume grid-supplied shore power replaces auxiliary engines during berthing. Emission factors and auxiliary loads are documented per fuel type in the emissions dataset.</p>
+        <p class="hint" style="margin-bottom:0" data-t>Every emission figure on this platform covers only the berthing phase and only auxiliary engines: this is the consumption that onshore power supply (OPS) replaces, and the only phase observed at all three ports, which makes the figures directly comparable and directly actionable for electrification planning. Anchorage and manoeuvring are excluded by design (Itaguaí's PSP source has no arrival time). Method: IMO 4th GHG Study 2020, auxiliary_power × berthing_hours × emission_factor, HFO scenario.</p>
       </div>
     </div>
   </main>
@@ -346,46 +417,75 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 /* dados */
-// Gerado automaticamente a partir de summary.json. Permite carregar sem servidor.
+// Gerado a partir de summary.json. Permite carregar sem servidor.
 window.SUMMARY = {
   "meta": {
-    "last_updated": "2026-07-01",
+    "last_updated": "2026-07-02",
     "data_status": "Provisorio: Itaguai, Itaqui e Paranagua (bases locais). ANTAQ em manutencao.",
     "coverage_note": "3 de 20 portos; os demais entram quando a ANTAQ voltar."
   },
   "overview": {
     "unique_vessels": 8506,
     "total_port_calls": 30972,
-    "total_dwt": 548233168.26,
+    "total_dwt": 595893035.26,
     "ports_covered": 3,
     "cargo_types": 3,
-    "dwt_coverage_pct": 94.82
+    "dwt_coverage_pct": 99.13
   },
   "fleet_profile": {
-    "avg_dwt": 68111.96,
+    "avg_dwt": 70162.84,
     "largest_vessel_name": "MAAS CONFIDENCE",
     "largest_vessel_dwt": 349140,
-    "top10pct_call_share_pct": null
+    "top10pct_call_share_pct": 43.9
   },
   "operational": {
     "busiest_port": "Paranaguá",
-    "avg_dwell_hours": 79.89,
-    "peak_month": null
+    "avg_dwell_hours": 63.24,
+    "peak_month": "Aug"
   },
   "emissions": {
-    "total_co2_estimated_t": 3143178.98,
-    "avg_co2_per_dwell_hour": 3.19,
+    "total_co2_estimated_t": 411787.64,
+    "avg_co2_per_dwell_hour": 0.21,
     "top_emitting_port": "Paranaguá",
-    "ops_avoidable_t": null
+    "avg_co2_per_call_t": 13.45
   },
   "data_quality": {
-    "dwt_found_pct": 94.82,
-    "dwt_missing_pct": 5.18,
+    "dwt_found_pct": 99.13,
+    "dwt_missing_pct": 0.87,
     "records_manual_review": 5,
     "sources": [
       "Base local Itaguai",
       "Base local Itaqui",
       "Base local Paranagua"
+    ],
+    "per_port": [
+      {
+        "port": "Itaguaí",
+        "calls": 6696,
+        "berthing_hours_pct": 96.88,
+        "fundeio_hours_pct": 0,
+        "dwt_pct": 96.33,
+        "cargo_pct": 95.64,
+        "co2_pct": 95.06
+      },
+      {
+        "port": "Itaqui",
+        "calls": 5864,
+        "berthing_hours_pct": 100,
+        "fundeio_hours_pct": 99.98,
+        "dwt_pct": 99.78,
+        "cargo_pct": 99.69,
+        "co2_pct": 99.59
+      },
+      {
+        "port": "Paranaguá",
+        "calls": 18412,
+        "berthing_hours_pct": 100,
+        "fundeio_hours_pct": 100,
+        "dwt_pct": 99.94,
+        "cargo_pct": 100,
+        "co2_pct": 99.99
+      }
     ]
   }
 };
@@ -399,15 +499,15 @@ window.DASHBOARD = {
       "unique_vessels": 6094,
       "avg_dwt": 57407.0,
       "total_dwt_capacity": 349552301.0,
-      "total_co2": 2093168.0
+      "total_co2": 222275.0
     },
     {
       "port": "Itaguaí",
       "calls": 6696,
       "unique_vessels": 1943,
-      "avg_dwt": 116752.0,
-      "total_dwt_capacity": 174194238.0,
-      "total_co2": 170893.0
+      "avg_dwt": 114594.0,
+      "total_dwt_capacity": 221854105.0,
+      "total_co2": 88996.0
     },
     {
       "port": "Itaqui",
@@ -415,33 +515,33 @@ window.DASHBOARD = {
       "unique_vessels": 2920,
       "avg_dwt": 57700.0,
       "total_dwt_capacity": 168427584.0,
-      "total_co2": 879118.0
+      "total_co2": 100517.0
     }
   ],
   "size_class": [
     {
       "label": "Small (<10k)",
-      "vessels": 151
+      "vessels": 218
     },
     {
       "label": "Handysize (10-35k)",
-      "vessels": 1327
+      "vessels": 1351
     },
     {
       "label": "Handymax/Supramax (35-60k)",
-      "vessels": 2628
+      "vessels": 2677
     },
     {
       "label": "Panamax (60-100k)",
-      "vessels": 2948
+      "vessels": 3040
     },
     {
       "label": "Large (100-200k)",
-      "vessels": 753
+      "vessels": 907
     },
     {
       "label": "Very Large (200k+)",
-      "vessels": 242
+      "vessels": 300
     }
   ],
   "size_class_by_port": {
@@ -468,12 +568,12 @@ window.DASHBOARD = {
       {
         "port": "Itaguaí",
         "data": [
-          46,
-          156,
-          207,
-          372,
-          470,
-          241
+          113,
+          180,
+          256,
+          464,
+          624,
+          299
         ]
       },
       {
@@ -551,11 +651,39 @@ window.DASHBOARD = {
       "calls": 2
     },
     {
+      "name": "BERGE HALEAKALA",
+      "imo": "9951953",
+      "dwt": 211693.0,
+      "port": "Itaguaí",
+      "calls": 7
+    },
+    {
+      "name": "BERGE MAUNA KEA",
+      "imo": "9951939",
+      "dwt": 211599.0,
+      "port": "Itaguaí",
+      "calls": 2
+    },
+    {
+      "name": "BERGE MAUNA LOA",
+      "imo": "9951941",
+      "dwt": 211524.0,
+      "port": "Itaguaí",
+      "calls": 3
+    },
+    {
       "name": "RANGIROA",
       "imo": "9634713",
       "dwt": 211496.0,
       "port": "Itaguaí",
       "calls": 6
+    },
+    {
+      "name": "XH ATOP",
+      "imo": "1018585",
+      "dwt": 211299.0,
+      "port": "Itaguaí",
+      "calls": 4
     },
     {
       "name": "MARINI",
@@ -584,34 +712,6 @@ window.DASHBOARD = {
       "dwt": 210940.0,
       "port": "Itaguaí",
       "calls": 10
-    },
-    {
-      "name": "SHANDONG HAPPINESS",
-      "imo": "9910789",
-      "dwt": 210938.0,
-      "port": "Itaguaí",
-      "calls": 4
-    },
-    {
-      "name": "BERGE BOBOTOV",
-      "imo": "9855226",
-      "dwt": 210914.0,
-      "port": "Itaguaí",
-      "calls": 2
-    },
-    {
-      "name": "GOLDEN SPRAY",
-      "imo": "9856945",
-      "dwt": 210667.0,
-      "port": "Itaguaí",
-      "calls": 10
-    },
-    {
-      "name": "XH TAIZHOU",
-      "imo": "9948114",
-      "dwt": 210204.0,
-      "port": "Itaguaí",
-      "calls": 4
     }
   ],
   "recurrence": {
@@ -620,7 +720,471 @@ window.DASHBOARD = {
     "max_calls": 227,
     "top10pct_call_share": 43.9
   },
-  "generated": "2026-07-01"
+  "monthly": {
+    "labels": [
+      "2018-12",
+      "2019-01",
+      "2019-02",
+      "2019-03",
+      "2019-04",
+      "2019-05",
+      "2019-06",
+      "2019-07",
+      "2019-08",
+      "2019-09",
+      "2019-10",
+      "2019-11",
+      "2019-12",
+      "2020-01",
+      "2020-02",
+      "2020-03",
+      "2020-04",
+      "2020-05",
+      "2020-06",
+      "2020-07",
+      "2020-08",
+      "2020-09",
+      "2020-10",
+      "2020-11",
+      "2020-12",
+      "2021-01",
+      "2021-02",
+      "2021-03",
+      "2021-04",
+      "2021-05",
+      "2021-06",
+      "2021-07",
+      "2021-08",
+      "2021-09",
+      "2021-10",
+      "2021-11",
+      "2021-12",
+      "2022-01",
+      "2022-02",
+      "2022-03",
+      "2022-04",
+      "2022-05",
+      "2022-06",
+      "2022-07",
+      "2022-08",
+      "2022-09",
+      "2022-10",
+      "2022-11",
+      "2022-12",
+      "2023-01",
+      "2023-02",
+      "2023-03",
+      "2023-04",
+      "2023-05",
+      "2023-06",
+      "2023-07",
+      "2023-08",
+      "2023-09",
+      "2023-10",
+      "2023-11",
+      "2023-12",
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "ports": [
+      {
+        "port": "Paranaguá",
+        "data": [
+          0,
+          174,
+          160,
+          194,
+          192,
+          199,
+          206,
+          210,
+          224,
+          193,
+          203,
+          208,
+          187,
+          173,
+          172,
+          193,
+          206,
+          215,
+          195,
+          221,
+          228,
+          217,
+          223,
+          213,
+          188,
+          178,
+          172,
+          213,
+          208,
+          228,
+          207,
+          217,
+          190,
+          208,
+          196,
+          197,
+          203,
+          186,
+          207,
+          193,
+          198,
+          214,
+          207,
+          216,
+          227,
+          215,
+          218,
+          207,
+          203,
+          201,
+          236,
+          270,
+          255,
+          307,
+          230,
+          206,
+          232,
+          230,
+          225,
+          215,
+          266,
+          228,
+          232,
+          247,
+          227,
+          235,
+          261,
+          227,
+          243,
+          244,
+          234,
+          216,
+          215,
+          230,
+          248,
+          259,
+          241,
+          254,
+          261,
+          279,
+          276,
+          262,
+          241,
+          247,
+          230
+        ]
+      },
+      {
+        "port": "Itaguaí",
+        "data": [
+          0,
+          64,
+          59,
+          61,
+          64,
+          64,
+          60,
+          65,
+          68,
+          58,
+          55,
+          65,
+          60,
+          60,
+          61,
+          52,
+          62,
+          83,
+          90,
+          71,
+          95,
+          89,
+          100,
+          90,
+          98,
+          85,
+          80,
+          96,
+          79,
+          93,
+          83,
+          89,
+          88,
+          94,
+          96,
+          91,
+          81,
+          60,
+          72,
+          84,
+          81,
+          90,
+          70,
+          64,
+          73,
+          88,
+          68,
+          74,
+          63,
+          54,
+          52,
+          56,
+          59,
+          80,
+          70,
+          72,
+          64,
+          80,
+          78,
+          65,
+          57,
+          73,
+          93,
+          60,
+          84,
+          83,
+          89,
+          78,
+          103,
+          96,
+          92,
+          87,
+          80,
+          77,
+          77,
+          84,
+          78,
+          95,
+          96,
+          84,
+          99,
+          100,
+          89,
+          87,
+          84
+        ]
+      },
+      {
+        "port": "Itaqui",
+        "data": [
+          5,
+          51,
+          56,
+          67,
+          65,
+          68,
+          71,
+          70,
+          80,
+          84,
+          78,
+          68,
+          72,
+          72,
+          63,
+          92,
+          90,
+          76,
+          81,
+          67,
+          81,
+          86,
+          79,
+          81,
+          79,
+          60,
+          69,
+          77,
+          95,
+          85,
+          92,
+          89,
+          96,
+          90,
+          85,
+          90,
+          76,
+          68,
+          75,
+          78,
+          88,
+          99,
+          90,
+          86,
+          104,
+          94,
+          88,
+          68,
+          80,
+          77,
+          75,
+          84,
+          81,
+          96,
+          91,
+          99,
+          100,
+          95,
+          99,
+          83,
+          86,
+          72,
+          56,
+          79,
+          76,
+          92,
+          98,
+          92,
+          97,
+          93,
+          85,
+          79,
+          75,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "dwell_by_cargo": [
+    {
+      "label": "GRANEL SÓLIDO",
+      "hours": 77.9
+    },
+    {
+      "label": "CARGA GERAL",
+      "hours": 51.1
+    },
+    {
+      "label": "GRANEL LÍQUIDO",
+      "hours": 45.6
+    }
+  ],
+  "emissions_by_port": [
+    {
+      "port": "Paranaguá",
+      "berth_aux": 222275.0,
+      "co2_per_hour": 0.232
+    },
+    {
+      "port": "Itaqui",
+      "berth_aux": 100517.0,
+      "co2_per_hour": 0.268
+    },
+    {
+      "port": "Itaguaí",
+      "berth_aux": 88996.0,
+      "co2_per_hour": 0.145
+    }
+  ],
+  "top_emitters": [
+    {
+      "imo": "8608705",
+      "name": "KARMOL LNGT POWERSHIP ASIA",
+      "co2": 2264.0,
+      "calls": 3,
+      "ports": 1
+    },
+    {
+      "imo": "9679244",
+      "name": "WS TITAN",
+      "co2": 1625.0,
+      "calls": 44,
+      "ports": 1
+    },
+    {
+      "imo": "9541916",
+      "name": "VEGA",
+      "co2": 1550.0,
+      "calls": 8,
+      "ports": 1
+    },
+    {
+      "imo": "9541772",
+      "name": "LYRA",
+      "co2": 1483.0,
+      "calls": 29,
+      "ports": 1
+    },
+    {
+      "imo": "9292137",
+      "name": " ALIANÇA LEBLON ",
+      "co2": 1310.0,
+      "calls": 118,
+      "ports": 1
+    },
+    {
+      "imo": "9390020",
+      "name": "DALLAS",
+      "co2": 1239.0,
+      "calls": 51,
+      "ports": 2
+    },
+    {
+      "imo": "9869772",
+      "name": "SAAM ALYA",
+      "co2": 1216.0,
+      "calls": 13,
+      "ports": 1
+    },
+    {
+      "imo": "9489895",
+      "name": "CELSO FURTADO",
+      "co2": 1018.0,
+      "calls": 44,
+      "ports": 2
+    },
+    {
+      "imo": "9489900",
+      "name": "SERGIO BUARQUE DE HOLANDA",
+      "co2": 1007.0,
+      "calls": 51,
+      "ports": 2
+    },
+    {
+      "imo": "9538141",
+      "name": "ALHENA",
+      "co2": 959.0,
+      "calls": 46,
+      "ports": 2
+    }
+  ],
+  "generated": "2026-07-02"
 };
 
 // Gerado por europe/benchmark. Brasil vs EU MRV 2024.
@@ -690,6 +1254,145 @@ window.EUROPE = {
   "generated": "2026-07-01"
 };
 
+// Gerado por 04_europe_validation.py
+window.EU_VALID = {
+  "n_vessels": 3166,
+  "median_days": 37.2,
+  "p25_days": 17.7,
+  "p75_days": 71.2,
+  "spearman": 0.295,
+  "by_type": [
+    {
+      "type": "Bulk carrier",
+      "n": 1748,
+      "rate_th": 0.146,
+      "eu_berth_t": 135.6,
+      "implied_days": 43.9
+    },
+    {
+      "type": "Chemical tanker",
+      "n": 419,
+      "rate_th": 0.48,
+      "eu_berth_t": 291.4,
+      "implied_days": 27.4
+    },
+    {
+      "type": "General cargo ship",
+      "n": 324,
+      "rate_th": 0.262,
+      "eu_berth_t": 150.4,
+      "implied_days": 26.3
+    },
+    {
+      "type": "Oil tanker",
+      "n": 265,
+      "rate_th": 0.48,
+      "eu_berth_t": 279.7,
+      "implied_days": 24.4
+    },
+    {
+      "type": "Container ship",
+      "n": 260,
+      "rate_th": 0.437,
+      "eu_berth_t": 679.3,
+      "implied_days": 64.7
+    },
+    {
+      "type": "Other ship types",
+      "n": 74,
+      "rate_th": 0.437,
+      "eu_berth_t": 124.1,
+      "implied_days": 16.9
+    },
+    {
+      "type": "Vehicle carrier",
+      "n": 36,
+      "rate_th": 0.437,
+      "eu_berth_t": 169.7,
+      "implied_days": 16.2
+    },
+    {
+      "type": "Container/ro-ro cargo ship",
+      "n": 20,
+      "rate_th": 0.437,
+      "eu_berth_t": 759.3,
+      "implied_days": 72.4
+    }
+  ],
+  "mrv_year": 2024,
+  "generated": "2026-07-02"
+};
+
+// Gerado por 05_ets_exposure.py
+window.ETS = {
+  "n_vessels": 3821,
+  "co2_ets_total_t": 12850671.0,
+  "cost_total_eur": 1028053704.0,
+  "cost_median_eur": 171586.0,
+  "eua_price": 80.0,
+  "phase_in_note": "2024: 40% | 2025: 70% | 2026+: 100%",
+  "by_type": [
+    {
+      "type": "Bulk carrier",
+      "n": 2194,
+      "co2_ets_total": 4674664.0,
+      "co2_ets_median": 1794.0,
+      "cost_median_eur": 143500.0
+    },
+    {
+      "type": "Container ship",
+      "n": 278,
+      "co2_ets_total": 3947377.0,
+      "co2_ets_median": 12956.0,
+      "cost_median_eur": 1036460.0
+    },
+    {
+      "type": "Chemical tanker",
+      "n": 522,
+      "co2_ets_total": 1645245.0,
+      "co2_ets_median": 2568.0,
+      "cost_median_eur": 205472.0
+    },
+    {
+      "type": "Oil tanker",
+      "n": 286,
+      "co2_ets_total": 900870.0,
+      "co2_ets_median": 2734.0,
+      "cost_median_eur": 218689.0
+    },
+    {
+      "type": "General cargo ship",
+      "n": 349,
+      "co2_ets_total": 817037.0,
+      "co2_ets_median": 2008.0,
+      "cost_median_eur": 160641.0
+    },
+    {
+      "type": "Vehicle carrier",
+      "n": 76,
+      "co2_ets_total": 330434.0,
+      "co2_ets_median": 3986.0,
+      "cost_median_eur": 318883.0
+    },
+    {
+      "type": "Container/ro-ro cargo ship",
+      "n": 20,
+      "co2_ets_total": 212634.0,
+      "co2_ets_median": 10844.0,
+      "cost_median_eur": 867539.0
+    },
+    {
+      "type": "Other ship types",
+      "n": 75,
+      "co2_ets_total": 201825.0,
+      "co2_ets_median": 2366.0,
+      "cost_median_eur": 189277.0
+    }
+  ],
+  "mrv_year": 2024,
+  "generated": "2026-07-02"
+};
+
 /* logica */
 // Brazil Vessel Call Intelligence — shared front-end logic
 // Loads data/summary.json and fills any element with [data-kpi="path.to.value"].
@@ -707,9 +1410,14 @@ window.EUROPE = {
 
   function formatValue(val, fmt) {
     if (val === null || val === undefined || val === "") return null;
-    if (fmt === "int") return Number(val).toLocaleString("en-GB");
+    if (fmt === "int") return Math.round(Number(val)).toLocaleString("en-GB");
     if (fmt === "pct") return Number(val).toLocaleString("en-GB") + "%";
-    if (fmt === "dwt") return Number(val).toLocaleString("en-GB") + " t";
+    if (fmt === "dwt") {
+      var n = Number(val);
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + " bn t";
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + " M t";
+      return Math.round(n).toLocaleString("en-GB") + " t";
+    }
     return String(val);
   }
 
@@ -734,6 +1442,27 @@ window.EUROPE = {
     if (statusEl && data.meta && data.meta.data_status) {
       statusEl.textContent = data.meta.data_status;
     }
+    renderPortQuality(data);
+  }
+
+  // Completeness-by-port table (Data Quality page)
+  function renderPortQuality(data) {
+    var tbody = document.getElementById("table-port-quality");
+    var rows = data && data.data_quality && data.data_quality.per_port;
+    if (!tbody || !rows) return;
+    function pill(pct) {
+      if (pct === null || pct === undefined) return '<span class="pill pending">–</span>';
+      var cls = pct >= 99 ? "good" : (pct >= 90 ? "warn" : "bad");
+      return '<span class="pill ' + cls + '">' + Number(pct).toLocaleString("en-GB") + "%</span>";
+    }
+    tbody.innerHTML = rows.map(function (r) {
+      return "<tr><td class=\"metric\">" + r.port + "</td>" +
+        "<td>" + Number(r.calls).toLocaleString("en-GB") + "</td>" +
+        "<td>" + pill(r.berthing_hours_pct) + "</td>" +
+        "<td>" + pill(r.dwt_pct) + "</td>" +
+        "<td>" + pill(r.cargo_pct) + "</td>" +
+        "<td>" + pill(r.co2_pct) + "</td></tr>";
+    }).join("");
   }
 
   function markActiveNav() {
@@ -873,6 +1602,45 @@ window.EUROPE = {
     "th.port": { en: "Port", pt: "Porto" },
     "th.calls": { en: "Calls", pt: "Escalas" },
 
+    // vessel search
+    "vs.title": { en: "Vessel search", pt: "Busca de navios" },
+    "vs.hint": { en: "Search any of the vessels by name or IMO number. Vessels calling at two or more ports show a port-by-port comparison.",
+                 pt: "Busque qualquer navio por nome ou número IMO. Navios que atracam em dois ou mais portos mostram a comparação porto a porto." },
+    "vs.type": { en: "Ship type (EU MRV)", pt: "Tipo de navio (EU MRV)" },
+    "vs.co2": { en: "At-berth CO₂, aux (t)", pt: "CO₂ atracado, aux (t)" },
+    "vs.avgberth": { en: "Avg berthing (h)", pt: "Atracação média (h)" },
+    "vs.co2port": { en: "CO₂ HFO (t)", pt: "CO₂ HFO (t)" },
+    "vs.multinote": { en: "Same vessel, different ports: differences in average berthing time reflect port operations, cargo handled and berth allocation, not the ship itself.",
+                      pt: "Mesmo navio, portos diferentes: diferenças no tempo médio de atracação refletem a operação do porto, a carga movimentada e a alocação de berço, não o navio em si." },
+    "vs.mtlink": { en: "View on MarineTraffic", pt: "Ver no MarineTraffic" },
+
+    // port call analytics charts
+    "pca.ch.callsport": { en: "Calls per port", pt: "Atracações por porto" },
+    "pca.ch.callsport.h": { en: "Total port calls in the period, per port", pt: "Total de atracações no período, por porto" },
+    "pca.ch.dwellcargo": { en: "Average dwell by cargo", pt: "Permanência média por carga" },
+    "pca.ch.dwellcargo.h": { en: "Mean berthing hours per cargo nature", pt: "Horas médias de atracação por natureza da carga" },
+    "pca.ch.monthly": { en: "Monthly seasonality", pt: "Sazonalidade mensal" },
+    "pca.ch.monthly.h": { en: "Port calls per month, per port, across the whole period", pt: "Atracações por mês, por porto, em todo o período" },
+
+    // emissions charts
+    "em.ch.co2port": { en: "At-berth CO₂ by port (auxiliary engines)", pt: "CO₂ atracado por porto (motores auxiliares)" },
+    "em.ch.co2port.h": { en: "Comparable across ports: berthing phase only, auxiliary engines — the consumption OPS replaces (HFO scenario)", pt: "Comparável entre portos: só a fase atracada, motores auxiliares, o consumo que o OPS substitui (cenário HFO)" },
+    "em.ch.co2hour": { en: "At-berth CO₂ per berthing hour", pt: "CO₂ atracado por hora de atracação" },
+    "em.ch.co2hour.h": { en: "Auxiliary-engine carbon intensity per port (t CO₂ / h at berth)", pt: "Intensidade de carbono dos auxiliares por porto (t CO₂ / h atracado)" },
+    "em.topemit": { en: "Top 10 emitting vessels (at berth)", pt: "10 navios que mais emitem (atracados)" },
+    "em.topemit.h": { en: "Cumulative at-berth auxiliary-engine CO₂ across all calls in the period (HFO scenario) — comparable across ports.", pt: "CO₂ dos motores auxiliares atracados, acumulado em todas as escalas do período (cenário HFO), comparável entre portos." },
+    "em.th.co2": { en: "CO₂ (t)", pt: "CO₂ (t)" },
+    "em.th.ports": { en: "Ports", pt: "Portos" },
+
+    // data quality per port
+    "dq.perport": { en: "Completeness by port", pt: "Completude por porto" },
+    "dq.perport.h": { en: "Share of port calls with each field filled, per port. Computed from the harmonised call records at every pipeline run.",
+                      pt: "Percentual de escalas com cada campo preenchido, por porto. Calculado dos registros harmonizados a cada execução do pipeline." },
+    "dq.th.berth": { en: "Berthing hours", pt: "Horas de atracação" },
+    "dq.th.dwt": { en: "Valid DWT", pt: "DWT válido" },
+    "dq.th.cargo": { en: "Cargo nature", pt: "Natureza da carga" },
+    "dq.th.co2": { en: "CO₂ estimated", pt: "CO₂ estimado" },
+
     // shell pages (page-head)
     "pca.eyebrow": { en: "Module 3 · Maritime analytics", pt: "Módulo 3 · Análise marítima" },
     "pca.title": { en: "Port Call Analytics", pt: "Análise de Atracações" },
@@ -898,7 +1666,39 @@ window.EUROPE = {
     "eu.st.brnm": { en: "Median CO₂/nm, Brazil-operating", pt: "CO₂/nm mediano, operando no Brasil" },
     "eu.st.eunm": { en: "Median CO₂/nm, EU fleet", pt: "CO₂/nm mediano, frota UE" },
     "eu.chart": { en: "CO₂ per transport work by ship type (g CO₂ / t·nm)", pt: "CO₂ por trabalho de transporte, por tipo de navio (g CO₂ / t·milha)" },
-    "eu.chart.h": { en: "Lower is more efficient. Median of each fleet.", pt: "Menor é mais eficiente. Mediana de cada frota." }
+    "eu.chart.h": { en: "Lower is more efficient. Median of each fleet.", pt: "Menor é mais eficiente. Mediana de cada frota." },
+
+    // EU validation
+    "ev.title": { en: "Model validation, verified EU data", pt: "Validação do modelo, dados verificados da UE" },
+    "ev.desc": { en: "The same fleet that calls at the Brazilian ports reports verified at-berth CO₂ in EU ports (EU MRV 2024). Applying our estimated auxiliary-engine rates to those verified totals implies how many days per year each vessel would have spent at berth in Europe. Plausible durations indicate the model's rates are consistent with verified data.",
+                 pt: "A mesma frota que atraca nos portos brasileiros reporta CO₂ atracado verificado nos portos da UE (EU MRV 2024). Aplicar as nossas taxas estimadas dos motores auxiliares a esses totais verificados implica quantos dias por ano cada navio teria passado atracado na Europa. Durações plausíveis indicam que as taxas do modelo são consistentes com os dados verificados." },
+    "ev.st.n": { en: "Vessels compared", pt: "Navios comparados" },
+    "ev.st.days": { en: "Implied EU berth days/yr, median", pt: "Dias atracado/ano na UE implícitos, mediana" },
+    "ev.st.iqr": { en: "Interquartile range", pt: "Intervalo interquartil" },
+    "ev.st.corr": { en: "Rank correlation, rate × verified", pt: "Correlação de postos, taxa × verificado" },
+    "ev.table": { en: "Validation by ship type", pt: "Validação por tipo de navio" },
+    "ev.table.h": { en: "Medians per ship type: our estimated auxiliary rate in Brazil, the verified annual at-berth CO₂ in EU ports, and the implied berth days per year.",
+                    pt: "Medianas por tipo de navio: a nossa taxa auxiliar estimada no Brasil, o CO₂ atracado anual verificado nos portos da UE e os dias atracados por ano implícitos." },
+    "ev.th.type": { en: "Ship type", pt: "Tipo de navio" },
+    "ev.th.n": { en: "Vessels", pt: "Navios" },
+    "ev.th.rate": { en: "Our rate (t CO₂/h)", pt: "Nossa taxa (t CO₂/h)" },
+    "ev.th.eu": { en: "EU verified at berth (t/yr)", pt: "Verificado atracado na UE (t/ano)" },
+    "ev.th.days": { en: "Implied berth days/yr", pt: "Dias atracado/ano implícitos" },
+
+    // ETS exposure
+    "ets.title": { en: "EU carbon-cost exposure of the fleet serving Brazil", pt: "Exposição da frota que serve o Brasil ao custo de carbono europeu" },
+    "ets.desc": { en: "Vessels calling at the Brazilian ports also fall under the EU Emissions Trading System when they trade with Europe. Their verified ETS-scoped CO₂ (EU MRV 2024) priced at the current allowance value shows how much European carbon cost travels with the fleet that serves Brazilian trade lanes.",
+                  pt: "Os navios que atracam nos portos brasileiros também entram no Sistema de Comércio de Emissões da UE quando operam com a Europa. O CO₂ verificado no escopo do ETS (EU MRV 2024), precificado ao valor atual da licença, mostra quanto custo de carbono europeu viaja com a frota que serve as rotas brasileiras." },
+    "ets.st.n": { en: "Vessels under EU ETS", pt: "Navios sob o EU ETS" },
+    "ets.st.co2": { en: "ETS-scoped CO₂ (t/yr)", pt: "CO₂ no escopo ETS (t/ano)" },
+    "ets.st.cost": { en: "Exposure at current EUA price", pt: "Exposição ao preço atual do EUA" },
+    "ets.st.median": { en: "Median cost per vessel", pt: "Custo mediano por navio" },
+    "ets.table": { en: "ETS exposure by ship type", pt: "Exposição ao ETS por tipo de navio" },
+    "ets.table.h": { en: "Verified 2024 ETS-scoped emissions of the Brazil-calling fleet. Surrender obligation: 40% for 2024, 70% for 2025, 100% from 2026.",
+                     pt: "Emissões verificadas de 2024 no escopo do ETS para a frota que atraca no Brasil. Obrigação de devolução: 40% em 2024, 70% em 2025, 100% a partir de 2026." },
+    "ets.th.total": { en: "ETS CO₂, total (t)", pt: "CO₂ ETS, total (t)" },
+    "ets.th.med": { en: "Median per vessel (t)", pt: "Mediana por navio (t)" },
+    "ets.th.cost": { en: "Median cost (€/yr)", pt: "Custo mediano (€/ano)" }
   };
 
   // data-value labels (cargo nature) translated on the fly
@@ -1000,6 +1800,15 @@ window.EUROPE = {
     "Avg. dwell time": "Tempo médio atracado",
     "Hours at berth": "Horas no berço",
     "Peak month": "Mês de pico",
+    "Call concentration": "Concentração de escalas",
+    "Share of calls by top 10% vessels": "Escalas dos 10% navios mais frequentes",
+    "At-berth auxiliary engines": "Motores auxiliares atracados",
+    "Estimated CO₂ (OPS-avoidable)": "CO₂ estimado (evitável com OPS)",
+    "Tonnes, at-berth auxiliary engines": "Toneladas, motores auxiliares atracados",
+    "Avg CO₂ per call": "CO₂ médio por escala",
+    "Tonnes per port call": "Toneladas por atracação",
+    "Every emission figure on this platform covers only the berthing phase and only auxiliary engines: this is the consumption that onshore power supply (OPS) replaces, and the only phase observed at all three ports, which makes the figures directly comparable and directly actionable for electrification planning. Anchorage and manoeuvring are excluded by design (Itaguaí's PSP source has no arrival time). Method: IMO 4th GHG Study 2020, auxiliary_power × berthing_hours × emission_factor, HFO scenario.":
+      "Todos os números de emissão desta plataforma cobrem apenas a fase atracada e apenas os motores auxiliares: é o consumo que a energia em terra (OPS) substitui e a única fase observada nos três portos, o que torna os números diretamente comparáveis e acionáveis para o planejamento de eletrificação. Fundeio e manobra ficam fora por decisão metodológica (a fonte PSP de Itaguaí não tem hora de chegada). Método: IMO 4th GHG Study 2020, potência_auxiliar × horas_atracado × fator_de_emissão, cenário HFO.",
     "Highest call frequency": "Maior frequência de atracações",
     "Estimated CO₂": "CO₂ estimado",
     "Tonnes at berth": "Toneladas atracado",
@@ -1202,6 +2011,77 @@ window.EUROPE = {
         }),
       });
     }
+
+    // ---- Port Call Analytics ----
+    make("chart-calls-by-port", {
+      type: "bar",
+      data: {
+        labels: D.by_port.map(function (p) { return p.port; }),
+        datasets: [{ data: D.by_port.map(function (p) { return p.calls; }), backgroundColor: TEAL, borderRadius: 6 }],
+      },
+      options: Object.assign({}, baseOpts, { plugins: noLegend }),
+    });
+
+    if (D.dwell_by_cargo) {
+      make("chart-dwell-by-cargo", {
+        type: "bar",
+        data: {
+          labels: D.dwell_by_cargo.map(function (c) { return DL(c.label); }),
+          datasets: [{ data: D.dwell_by_cargo.map(function (c) { return c.hours; }), backgroundColor: "#e8a33d", borderRadius: 6 }],
+        },
+        options: Object.assign({}, baseOpts, {
+          indexAxis: "y",
+          plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " h"; } } } }),
+        }),
+      });
+    }
+
+    if (D.monthly && el("chart-monthly-calls")) {
+      make("chart-monthly-calls", {
+        type: "line",
+        data: {
+          labels: D.monthly.labels,
+          datasets: D.monthly.ports.map(function (p, i) {
+            return { label: p.port, data: p.data, borderColor: PALETTE[i % PALETTE.length],
+                     backgroundColor: PALETTE[i % PALETTE.length], pointRadius: 0,
+                     borderWidth: 2, tension: 0.25 };
+          }),
+        },
+        options: Object.assign({}, baseOpts, {
+          plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } } },
+          scales: { x: { ticks: { maxTicksLimit: 14 } } },
+          interaction: { mode: "index", intersect: false },
+        }),
+      });
+    }
+
+    // ---- Emissions & OPS ----
+    // Comparacao entre portos: apenas motor auxiliar na fase atracada (base do OPS)
+    if (D.emissions_by_port && el("chart-co2-by-port")) {
+      make("chart-co2-by-port", {
+        type: "bar",
+        data: {
+          labels: D.emissions_by_port.map(function (p) { return p.port; }),
+          datasets: [{ data: D.emissions_by_port.map(function (p) { return p.berth_aux; }), backgroundColor: TEAL, borderRadius: 6 }],
+        },
+        options: Object.assign({}, baseOpts, {
+          plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " t"; } } } }),
+        }),
+      });
+    }
+
+    if (D.emissions_by_port && el("chart-co2-per-hour")) {
+      make("chart-co2-per-hour", {
+        type: "bar",
+        data: {
+          labels: D.emissions_by_port.map(function (p) { return p.port; }),
+          datasets: [{ data: D.emissions_by_port.map(function (p) { return p.co2_per_hour; }), backgroundColor: "#7b6cf6", borderRadius: 6 }],
+        },
+        options: Object.assign({}, baseOpts, {
+          plugins: Object.assign({}, noLegend, { tooltip: { callbacks: { label: function (c) { return fmt(c.raw) + " t/h"; } } } }),
+        }),
+      });
+    }
   }
 
   function buildEurope() {
@@ -1240,6 +2120,14 @@ window.EUROPE = {
           "</td><td>" + v.calls + "</td></tr>";
       }).join("");
     }
+    var te = el("table-top-emitters");
+    if (te && D && D.top_emitters) {
+      te.innerHTML = D.top_emitters.map(function (v, i) {
+        return "<tr><td>" + (i + 1) + "</td><td class='metric'>" + v.name +
+          "</td><td>" + v.imo + "</td><td>" + fmt(v.co2) + "</td><td>" + v.calls +
+          "</td><td>" + v.ports + "</td></tr>";
+      }).join("");
+    }
     function setText(id, val) { var e = el(id); if (e) e.textContent = val; }
     if (D && D.recurrence) {
       setText("stat-recurring", fmt(D.recurrence.recurring_vessels));
@@ -1249,7 +2137,48 @@ window.EUROPE = {
     }
   }
 
-  function render() { buildAll(); fillStatic(); }
+  function fillEuValid() {
+    var V = window.EU_VALID;
+    if (!V) return;
+    function st(id, v) { var e = el(id); if (e) e.textContent = v; }
+    st("ev-n", fmt(V.n_vessels));
+    st("ev-days", V.median_days);
+    st("ev-iqr", V.p25_days + " – " + V.p75_days);
+    st("ev-corr", "+" + V.spearman);
+    var tb = el("table-eu-valid");
+    if (tb && V.by_type) {
+      tb.innerHTML = V.by_type.map(function (r) {
+        return "<tr><td class='metric'>" + DL(r.type) + "</td><td>" + fmt(r.n) +
+          "</td><td>" + r.rate_th + "</td><td>" + fmt(r.eu_berth_t) +
+          "</td><td>" + r.implied_days + "</td></tr>";
+      }).join("");
+    }
+  }
+
+  function fillEts() {
+    var T = window.ETS;
+    if (!T) return;
+    function st(id, v) { var e = el(id); if (e) e.textContent = v; }
+    function eur(n) {
+      if (n >= 1e9) return "€" + (n / 1e9).toFixed(2) + (lang() === "pt" ? " bi" : " bn");
+      if (n >= 1e6) return "€" + (n / 1e6).toFixed(1) + (lang() === "pt" ? " mi" : " m");
+      return "€" + fmt(Math.round(n));
+    }
+    st("ets-n", fmt(T.n_vessels));
+    st("ets-co2", fmt(T.co2_ets_total_t));
+    st("ets-cost", eur(T.cost_total_eur) + "/" + (lang() === "pt" ? "ano" : "yr"));
+    st("ets-median", eur(T.cost_median_eur));
+    var tb = el("table-ets");
+    if (tb && T.by_type) {
+      tb.innerHTML = T.by_type.map(function (r) {
+        return "<tr><td class='metric'>" + DL(r.type) + "</td><td>" + fmt(r.n) +
+          "</td><td>" + fmt(r.co2_ets_total) + "</td><td>" + fmt(r.co2_ets_median) +
+          "</td><td>" + fmt(r.cost_median_eur) + "</td></tr>";
+      }).join("");
+    }
+  }
+
+  function render() { buildAll(); fillStatic(); fillEuValid(); fillEts(); }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", render);

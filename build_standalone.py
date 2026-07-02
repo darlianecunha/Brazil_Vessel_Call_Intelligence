@@ -21,15 +21,24 @@ mainjs = r("assets/js/main.js")
 i18n = r("assets/js/i18n.js")
 charts = r("assets/js/charts.js")
 
+vessels = r("data/vessels.js")
+vsearch = r("assets/js/vessel-search.js")
+euvalid = r("data/europe_validation.js")
+ets = r("data/ets_exposure.js")
+
 CDN = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
-BUNDLE = (
-    '<script src="' + CDN + '"></script>\n'
-    + "<script>\n/* dados */\n"
-    + summary + "\n" + dashboard + "\n" + europe + "\n"
-    + "/* logica */\n"
-    + mainjs + "\n" + i18n + "\n" + charts + "\n"
-    + "</" + "script>\n"
-)
+
+def bundle(pg):
+    """Bundle por pagina: o dataset de navios (grande) so entra no explorer."""
+    dados = summary + "\n" + dashboard + "\n" + europe + "\n" + euvalid + "\n" + ets + "\n"
+    logica = mainjs + "\n" + i18n + "\n" + charts + "\n"
+    if pg == "vessel-explorer.html":
+        dados += vessels + "\n"
+        logica += vsearch + "\n"
+    return ('<script src="' + CDN + '"></script>\n'
+            + "<script>\n/* dados */\n" + dados
+            + "/* logica */\n" + logica
+            + "</" + "script>\n")
 
 PAGES = ["index.html", "vessel-explorer.html", "port-call-analytics.html",
          "emissions.html", "data-quality.html"]
@@ -41,7 +50,7 @@ for pg in PAGES:
     h = re.sub(r'\s*<script src="assets/js/[^"]+"></' + 'script>', '', h)
     h = re.sub(r'\s*<script src="data/[^"]+"></' + 'script>', '', h)
     h = re.sub(r'\s*<script src="https://cdnjs\.cloudflare\.com/[^"]+"></' + 'script>', '', h)
-    h = h.replace("</body>", BUNDLE + "</body>")
+    h = h.replace("</body>", bundle(pg) + "</body>")
     (ROOT / pg).write_text(h, encoding="utf-8")
     refs = re.findall(r'(?:src|href)="(assets/[^"]+|data/[^"]+)"', h)
     print(pg, round(len(h) / 1024, 1), "KB | refs locais:", refs)
