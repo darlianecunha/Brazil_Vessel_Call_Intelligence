@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite it as below."
+type: software
+title: "Brazil Vessel Call Intelligence: IMO-based port-call and emissions analytics for Brazilian ports, 2019-2025"
+authors:
+  - family-names: "Cunha"
+    given-names: "Darliane Ribeiro"
+    orcid: "https://orcid.org/0000-0003-2548-1237"
+    affiliation: "Federal University of Maranhão (UFMA)"
+version: "1.0.0"
+date-released: "2026-07-02"
+doi: "10.5281/zenodo.21144511"
+repository-code: "https://github.com/darlianecunha/Brazil_Vessel_Call_Intelligence"
+license: MIT
+keywords:
+  - ports
+  - Brazil
+  - port calls
+  - IMO
+  - CO2 emissions
+  - onshore power supply
+  - EU ETS
+  - maritime decarbonisation
