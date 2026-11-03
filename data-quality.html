@@ -344,9 +344,9 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
             <tr><td class="metric" data-t>% vessels with DWT found</td><td data-t>Share of IMO with a DWT value</td><td><span class="pill good" data-kpi="data_quality.dwt_found_pct" data-fmt="pct">Pending</span></td></tr>
             <tr><td class="metric" data-t>% without DWT</td><td data-t>Vessels needing a new search</td><td><span class="pill warn" data-kpi="data_quality.dwt_missing_pct" data-fmt="pct">Pending</span></td></tr>
             <tr><td class="metric" data-t>Sources used</td><td data-t>DNV, VesselFinder, dwt_cache, other</td><td><span class="pill good" data-t>Tracked</span></td></tr>
-            <tr><td class="metric" data-t>Source divergence</td><td data-t>Two sources with different DWT</td><td><span class="pill pending" data-t>To compute</span></td></tr>
-            <tr><td class="metric" data-t>Duplicate IMO</td><td data-t>Same IMO, different names</td><td><span class="pill pending" data-t>To compute</span></td></tr>
-            <tr><td class="metric" data-t>Duplicate name</td><td data-t>Same name, different IMO</td><td><span class="pill pending" data-t>To compute</span></td></tr>
+            <tr><td class="metric" data-t>Source divergence</td><td data-t>IMO with DWT values differing by more than 2% between sources</td><td><span class="pill warn"><span data-kpi="data_quality.dwt_source_divergence_n" data-fmt="int">Pending</span> IMO (<span data-kpi="data_quality.dwt_source_divergence_pct" data-fmt="pct">Pending</span>)</span></td></tr>
+            <tr><td class="metric" data-t>Duplicate IMO</td><td data-t>Same IMO recorded under more than one vessel name (renamings, spelling variants)</td><td><span class="pill warn"><span data-kpi="data_quality.duplicate_imo_n" data-fmt="int">Pending</span> IMO (<span data-kpi="data_quality.duplicate_imo_pct" data-fmt="pct">Pending</span>)</span></td></tr>
+            <tr><td class="metric" data-t>Duplicate name</td><td data-t>Same vessel name used by more than one IMO</td><td><span class="pill warn"><span data-kpi="data_quality.duplicate_name_n" data-fmt="int">Pending</span> names</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -403,6 +403,11 @@ window.SUMMARY = {
     "dwt_found_pct": 99.13,
     "dwt_missing_pct": 0.87,
     "records_manual_review": 5,
+    "dwt_source_divergence_n": 210,
+    "dwt_source_divergence_pct": 2.47,
+    "duplicate_imo_n": 534,
+    "duplicate_imo_pct": 6.28,
+    "duplicate_name_n": 141,
     "sources": [
       "Base local Itaguai",
       "Base local Itaqui",
