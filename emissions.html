@@ -346,8 +346,8 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
       <div class="stat-row">
         <div class="stat-chip"><div class="n" id="eu-overlap">–</div><div class="l" data-i18n="eu.st.overlap">Vessels in both datasets</div></div>
         <div class="stat-chip"><div class="n" id="eu-pct">–</div><div class="l" data-i18n="eu.st.pct">Brazil fleet also in EU MRV</div></div>
-        <div class="stat-chip"><div class="n" id="eu-co2nm-br">–</div><div class="l" data-i18n="eu.st.brnm">Median CO₂/nm, Brazil-operating</div></div>
-        <div class="stat-chip"><div class="n" id="eu-co2nm-eu">–</div><div class="l" data-i18n="eu.st.eunm">Median CO₂/nm, EU fleet</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-br">–</div><div class="l" data-i18n="eu.st.brnm">Median CO₂ per nm (kg/nm), Brazil-operating</div></div>
+        <div class="stat-chip"><div class="n" id="eu-co2nm-eu">–</div><div class="l" data-i18n="eu.st.eunm">Median CO₂ per nm (kg/nm), EU fleet</div></div>
       </div>
       <div class="chart-box tall" style="margin-bottom:22px">
         <h3 data-i18n="eu.chart">CO₂ per transport work by ship type (g CO₂ / t·nm)</h3>
@@ -355,16 +355,16 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
         <div class="chart-canvas-wrap"><canvas id="chart-europe-type"></canvas></div>
       </div>
 
-      <h2 class="section-title" data-i18n="ev.title">Model validation, verified EU data</h2>
+      <h2 class="section-title" data-i18n="ev.title">Plausibility check against verified EU data</h2>
       <p class="page-head" style="margin:-6px 0 16px;color:var(--muted);font-size:14px" data-i18n="ev.desc">The same fleet that calls at the Brazilian ports reports verified at-berth CO₂ in EU ports (EU MRV 2024). Applying our estimated auxiliary-engine rates to those verified totals implies how many days per year each vessel would have spent at berth in Europe. Plausible durations indicate the model's rates are consistent with verified data.</p>
       <div class="stat-row">
         <div class="stat-chip"><div class="n" id="ev-n">–</div><div class="l" data-i18n="ev.st.n">Vessels compared</div></div>
         <div class="stat-chip"><div class="n" id="ev-days">–</div><div class="l" data-i18n="ev.st.days">Implied EU berth days/yr, median</div></div>
         <div class="stat-chip"><div class="n" id="ev-iqr">–</div><div class="l" data-i18n="ev.st.iqr">Interquartile range</div></div>
-        <div class="stat-chip"><div class="n" id="ev-corr">–</div><div class="l" data-i18n="ev.st.corr">Rank correlation, rate × verified</div></div>
+        <div class="stat-chip"><div class="n" id="ev-corr">–</div><div class="l" data-i18n="ev.st.corr">Rank correlation, rate × verified (weak: one rate per ship type)</div></div>
       </div>
       <div class="panel">
-        <h2 data-i18n="ev.table">Validation by ship type</h2>
+        <h2 data-i18n="ev.table">Plausibility check by ship type</h2>
         <p class="hint" data-i18n="ev.table.h">Medians per ship type: our estimated auxiliary rate in Brazil, the verified annual at-berth CO₂ in EU ports, and the implied berth days per year.</p>
         <table class="data">
           <thead><tr>
@@ -421,11 +421,11 @@ table.data td.metric { font-weight: 600; color: var(--navy); }
 window.SUMMARY = {
   "meta": {
     "last_updated": "2026-07-02",
-    "data_status": "Provisorio: Itaguai, Itaqui e Paranagua (bases locais). ANTAQ em manutencao.",
+    "data_status": "Provisional: Itaguaí, Itaqui and Paranaguá (local datasets). ANTAQ portal under maintenance at extraction time.",
     "coverage_note": "3 de 20 portos; os demais entram quando a ANTAQ voltar."
   },
   "overview": {
-    "unique_vessels": 8506,
+    "unique_vessels": 8505,
     "total_port_calls": 30972,
     "total_dwt": 595893035.26,
     "ports_covered": 3,
@@ -1528,7 +1528,7 @@ window.ETS = {
     "kpi.calls": { en: "Total port calls", pt: "Total de atracações" },
     "kpi.calls.sub": { en: "Berthing events", pt: "Eventos de atracação" },
     "kpi.dwt": { en: "Total DWT", pt: "DWT total" },
-    "kpi.dwt.sub": { en: "Potential capacity handled", pt: "Capacidade potencial movimentada" },
+    "kpi.dwt.sub": { en: "Sum of fleet deadweight (capacity, not cargo moved)", pt: "Soma do porte bruto da frota (capacidade, não carga movimentada)" },
     "kpi.ports": { en: "Ports covered", pt: "Portos cobertos" },
     "kpi.ports.sub": { en: "Brazilian ports", pt: "Portos brasileiros" },
     "kpi.cargo": { en: "Cargo types", pt: "Tipos de carga" },
@@ -1663,20 +1663,20 @@ window.ETS = {
     "eu.europe": { en: "Europe (EU MRV)", pt: "Europa (EU MRV)" },
     "eu.st.overlap": { en: "Vessels in both datasets", pt: "Navios nas duas bases" },
     "eu.st.pct": { en: "Brazil fleet also in EU MRV", pt: "Frota BR também no EU MRV" },
-    "eu.st.brnm": { en: "Median CO₂/nm, Brazil-operating", pt: "CO₂/nm mediano, operando no Brasil" },
-    "eu.st.eunm": { en: "Median CO₂/nm, EU fleet", pt: "CO₂/nm mediano, frota UE" },
+    "eu.st.brnm": { en: "Median CO₂ per nm (kg/nm), Brazil-operating", pt: "CO₂ mediano por milha (kg/nm), operando no Brasil" },
+    "eu.st.eunm": { en: "Median CO₂ per nm (kg/nm), EU fleet", pt: "CO₂ mediano por milha (kg/nm), frota UE" },
     "eu.chart": { en: "CO₂ per transport work by ship type (g CO₂ / t·nm)", pt: "CO₂ por trabalho de transporte, por tipo de navio (g CO₂ / t·milha)" },
     "eu.chart.h": { en: "Lower is more efficient. Median of each fleet.", pt: "Menor é mais eficiente. Mediana de cada frota." },
 
     // EU validation
-    "ev.title": { en: "Model validation, verified EU data", pt: "Validação do modelo, dados verificados da UE" },
+    "ev.title": { en: "Plausibility check against verified EU data", pt: "Teste de plausibilidade com dados verificados da UE" },
     "ev.desc": { en: "The same fleet that calls at the Brazilian ports reports verified at-berth CO₂ in EU ports (EU MRV 2024). Applying our estimated auxiliary-engine rates to those verified totals implies how many days per year each vessel would have spent at berth in Europe. Plausible durations indicate the model's rates are consistent with verified data.",
                  pt: "A mesma frota que atraca nos portos brasileiros reporta CO₂ atracado verificado nos portos da UE (EU MRV 2024). Aplicar as nossas taxas estimadas dos motores auxiliares a esses totais verificados implica quantos dias por ano cada navio teria passado atracado na Europa. Durações plausíveis indicam que as taxas do modelo são consistentes com os dados verificados." },
     "ev.st.n": { en: "Vessels compared", pt: "Navios comparados" },
     "ev.st.days": { en: "Implied EU berth days/yr, median", pt: "Dias atracado/ano na UE implícitos, mediana" },
     "ev.st.iqr": { en: "Interquartile range", pt: "Intervalo interquartil" },
-    "ev.st.corr": { en: "Rank correlation, rate × verified", pt: "Correlação de postos, taxa × verificado" },
-    "ev.table": { en: "Validation by ship type", pt: "Validação por tipo de navio" },
+    "ev.st.corr": { en: "Rank correlation, rate × verified (weak: one rate per ship type)", pt: "Correlação de postos, taxa × verificado (fraca: uma taxa por tipo de navio)" },
+    "ev.table": { en: "Plausibility check by ship type", pt: "Teste de plausibilidade por tipo de navio" },
     "ev.table.h": { en: "Medians per ship type: our estimated auxiliary rate in Brazil, the verified annual at-berth CO₂ in EU ports, and the implied berth days per year.",
                     pt: "Medianas por tipo de navio: a nossa taxa auxiliar estimada no Brasil, o CO₂ atracado anual verificado nos portos da UE e os dias atracados por ano implícitos." },
     "ev.th.type": { en: "Ship type", pt: "Tipo de navio" },
@@ -2123,7 +2123,8 @@ window.ETS = {
     var te = el("table-top-emitters");
     if (te && D && D.top_emitters) {
       te.innerHTML = D.top_emitters.map(function (v, i) {
-        return "<tr><td>" + (i + 1) + "</td><td class='metric'>" + v.name +
+        var flag = /POWERSHIP/i.test(v.name) ? " <span class='hint' title='Floating power plant: the auxiliary-engine rate of its ship type does not describe its real consumption; figure kept for transparency only'>(floating power plant, rate not applicable)</span>" : "";
+        return "<tr><td>" + (i + 1) + "</td><td class='metric'>" + v.name + flag +
           "</td><td>" + v.imo + "</td><td>" + fmt(v.co2) + "</td><td>" + v.calls +
           "</td><td>" + v.ports + "</td></tr>";
       }).join("");
